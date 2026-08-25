@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold-50: #FCFAF0;
+  --color-gold-100: #F7F1D8;
+  --color-gold-200: #EEDF9F;
+  --color-gold-300: #E2C966;
+  --color-gold-400: #D8B739;
+  --color-gold-500: #D4AF37;
+  --color-gold-600: #B89223;
+  --color-gold-700: #937118;
+  --color-gold-800: #765918;
+  --color-gold-900: #5F4719;
+
+  --color-primary: #D4AF37;
+  --color-primary-light: #E5C358;
+  --color-primary-dark: #9E7D1C;
+  --color-secondary: #2B2118;
+
+  --color-obsidian: #120F0D;
+  --color-espresso: #1C1714;
+  --color-warm-dark: #27211C;
+  --color-card-dark: #1E1915;
+
+  --color-ivory: #FAF7F2;
+  --color-champagne: #F5EFE4;
+  --color-cream: #FCFAF6;
+  --color-sand: #EFE7DA;
+
+  --font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color: #27211C;
+    background-color: #FCFAF6;
+  }
+  body {
+    font-family: var(--font-sans), sans-serif;
+    color: #27211C;
+    background-color: #FCFAF6;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif), Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  /* Luxury Gold Buttons */
+  .btn-gold {
+    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-neutral-900 bg-gradient-to-r from-[#D4AF37] via-[#F3DE8A] to-[#D4AF37] bg-[length:200%_auto] px-7 py-3.5 rounded-full shadow-[0_4px_20px_rgba(212,175,55,0.35)] hover:shadow-[0_6px_25px_rgba(212,175,55,0.55)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer;
+  }
+  .btn-dark {
+    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-[#FBF7EE] bg-[#1A1512] hover:bg-[#2A231E] border border-[#D4AF37]/30 hover:border-[#D4AF37] px-7 py-3.5 rounded-full shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer;
+  }
+  .btn-outline-gold {
+    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-[#937118] hover:text-[#120F0D] bg-transparent hover:bg-[#D4AF37] border-2 border-[#D4AF37] px-7 py-3.5 rounded-full hover:shadow-[0_4px_20px_rgba(212,175,55,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer;
+  }
+  .btn-white {
+    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-[#1A1512] bg-white hover:bg-[#FAF7F2] border border-[#EFE7DA] px-6 py-3 rounded-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer;
+  }
+
+  /* Cards */
+  .card-luxury {
+    @apply bg-white rounded-2xl border border-[#EFE7DA] shadow-[0_4px_24px_rgba(39,33,28,0.04)] hover:shadow-[0_12px_36px_rgba(212,175,55,0.15)] hover:border-[#D4AF37]/40 transition-all duration-300 overflow-hidden;
+  }
+  .card-dark {
+    @apply bg-[#1C1714] text-[#FAF7F2] rounded-2xl border border-[#D4AF37]/20 shadow-[0_4px_24px_rgba(0,0,0,0.3)] hover:border-[#D4AF37]/50 transition-all duration-300 overflow-hidden;
+  }
+
+  /* Badges */
+  .badge-gold {
+    @apply inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#FAF3E0] text-[#8C6B16] border border-[#D4AF37]/40;
+  }
+  .badge-dark {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider bg-[#2B231D] text-[#D4AF37] border border-[#D4AF37]/30;
+  }
+
+  /* Form Inputs */
+  .input-gold {
+    @apply w-full px-4 py-3.5 bg-white border border-[#E2D9CB] rounded-xl text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all;
+  }
+}
+
+/* Metallic Text & Glows */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #A87919 0%, #D4AF37 45%, #F6E294 70%, #C49B2C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-glow {
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.25);
+}
+
+.gold-ring {
+  box-shadow: 0 0 0 2px #D4AF37, 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF7F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B89223;
+}
