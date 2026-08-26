@@ -1,10 +1,21 @@
 import { Resend } from 'resend';
 
-// Use environment variables for Resend configuration
-const resendApiKey = process.env.RESEND_API_KEY;
-const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'notifications@vic-kakadon.com.ng';
+// Lazy Resend client initialization
+let resendClient: Resend | null = null;
 
-const resend = new Resend(resendApiKey);
+function getResendClient(): Resend | null {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn('RESEND_API_KEY is not configured. Email sending is disabled.');
+    return null;
+  }
+  if (!resendClient) {
+    resendClient = new Resend(apiKey);
+  }
+  return resendClient;
+}
+
+const getFromEmail = () => process.env.RESEND_FROM_EMAIL || 'notifications@vic-kakadon.com.ng';
 
 export interface OrderEmailData {
   orderNumber: string;
@@ -29,11 +40,18 @@ export interface OrderEmailData {
 
 export async function sendOrderConfirmationEmail(orderData: OrderEmailData) {
   try {
+    const resend = getResendClient();
+    if (!resend) {
+      console.warn('Skipping order confirmation email: RESEND_API_KEY is not set');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    const fromEmail = getFromEmail();
     console.log('Sending order confirmation email to:', orderData.customerEmail);
-    console.log('From:', resendFromEmail);
+    console.log('From:', fromEmail);
 
     const { data, error } = await resend.emails.send({
-      from: resendFromEmail,
+      from: fromEmail,
       to: [orderData.customerEmail],
       subject: `Order Confirmation - ${orderData.orderNumber}`,
       html: generateOrderConfirmationTemplate(orderData),
@@ -48,7 +66,7 @@ export async function sendOrderConfirmationEmail(orderData: OrderEmailData) {
     return { success: true, data };
   } catch (error: any) {
     console.error('Error sending order confirmation email:', error);
-    return { success: false, error: error.message || String(error) };
+    return { success: false, error: error?.message || String(error) };
   }
 }
 
@@ -57,10 +75,17 @@ export async function sendOrderStatusUpdateEmail(
   previousStatus?: string
 ) {
   try {
+    const resend = getResendClient();
+    if (!resend) {
+      console.warn('Skipping order status update email: RESEND_API_KEY is not set');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    const fromEmail = getFromEmail();
     console.log('Sending order status update email to:', orderData.customerEmail);
 
     const { data, error } = await resend.emails.send({
-      from: resendFromEmail,
+      from: fromEmail,
       to: [orderData.customerEmail],
       subject: `Order Status Update - ${orderData.orderNumber}`,
       html: generateOrderStatusUpdateTemplate(orderData, previousStatus),
@@ -75,7 +100,7 @@ export async function sendOrderStatusUpdateEmail(
     return { success: true, data };
   } catch (error: any) {
     console.error('Error sending order status update email:', error);
-    return { success: false, error: error.message || String(error) };
+    return { success: false, error: error?.message || String(error) };
   }
 }
 
