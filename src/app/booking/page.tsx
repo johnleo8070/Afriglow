@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,10 +17,20 @@ import {
   MapPin,
   Info,
   Lock,
-  ArrowRight
+  ArrowRight,
+  Search,
+  ZoomIn,
+  Filter
 } from "lucide-react";
-import { HAIRSTYLES_DATA, SALON_INFO, TIME_SLOTS, type Hairstyle } from "@/lib/hairstyles-data";
+import {
+  HAIRSTYLES_DATA,
+  SALON_INFO,
+  TIME_SLOTS,
+  CATEGORIES_LIST,
+  type Hairstyle
+} from "@/lib/hairstyles-data";
 import { showToast } from "@/components/Toast";
+import ImagePreviewModal from "@/components/ImagePreviewModal";
 
 function BookingEngine() {
   const searchParams = useSearchParams();
@@ -28,15 +38,67 @@ function BookingEngine() {
 
   const preselectedSlug = searchParams.get("style");
 
+  // Dynamic backend hairstyles list with fallback
+  const [hairstylesList, setHairstylesList] = useState<Hairstyle[]>(HAIRSTYLES_DATA);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All Styles");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Image preview modal state
+  const [previewStyle, setPreviewStyle] = useState<Hairstyle | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
   // Multi-step State (1 to 6)
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const isFirstMount = useRef(true);
+
+  // Smooth scroll back to top when moving between steps (especially on mobile)
+  const scrollToTop = () => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    scrollToTop();
+  }, [currentStep]);
 
   // Step 1: Style Selection
-  const initialStyle = HAIRSTYLES_DATA.find((s) => s.slug === preselectedSlug) || HAIRSTYLES_DATA[0];
+  const initialStyle =
+    hairstylesList.find((s) => s.slug === preselectedSlug) || hairstylesList[0];
   const [selectedStyle, setSelectedStyle] = useState<Hairstyle>(initialStyle);
   const [selectedLength, setSelectedLength] = useState<string>(
-    initialStyle.lengthOptions[0] || 'Mid-Back'
+    initialStyle.lengthOptions?.[0] || "Mid-Back"
   );
+
+  // Fetch live hairstyles from backend API on mount
+  useEffect(() => {
+    fetch("/api/hairstyles")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data && data.data.length > 0) {
+          setHairstylesList(data.data);
+          // If a preselected slug exists, match it with live data
+          if (preselectedSlug) {
+            const matched = data.data.find(
+              (s: Hairstyle) => s.slug === preselectedSlug
+            );
+            if (matched) {
+              setSelectedStyle(matched);
+              if (matched.lengthOptions && matched.lengthOptions.length > 0) {
+                setSelectedLength(matched.lengthOptions[0]);
+              }
+            }
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load hairstyles from API, using fallback data:", err);
+      });
+  }, [preselectedSlug]);
 
   // Step 2: Date Selection
   const today = new Date();
@@ -50,7 +112,9 @@ function BookingEngine() {
     return dates;
   }, []);
 
-  const [selectedDate, setSelectedDate] = useState<Date>(availableDates[1] || new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    availableDates[1] || new Date()
+  );
 
   // Step 3: Time Slot Selection
   const [selectedTime, setSelectedTime] = useState<string>(TIME_SLOTS[0]);
@@ -63,7 +127,7 @@ function BookingEngine() {
     preferredContact: "SMS & Phone",
     hairLength: "Medium Length (Shoulder to Collarbone)",
     hairCondition: "Clean, natural hair",
-    specialRequests: ""
+    specialRequests: "",
   });
 
   // Step 5 & 6: Payment selection
@@ -71,17 +135,40 @@ function BookingEngine() {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Filtered hairstyles for Step 1
+  const filteredHairstyles = useMemo(() => {
+    return hairstylesList.filter((style) => {
+      if (selectedCategory !== "All Styles" && style.category !== selectedCategory) {
+        return false;
+      }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchName = style.name.toLowerCase().includes(q);
+        const matchCat = style.category?.toLowerCase().includes(q);
+        const matchDesc = style.shortDescription?.toLowerCase().includes(q);
+        if (!matchName && !matchCat && !matchDesc) return false;
+      }
+      return true;
+    });
+  }, [hairstylesList, selectedCategory, searchQuery]);
+
   // When style changes, update length
   const handleSelectStyle = (style: Hairstyle) => {
     setSelectedStyle(style);
-    if (style.lengthOptions.length > 0) {
+    if (style.lengthOptions && style.lengthOptions.length > 0) {
       setSelectedLength(style.lengthOptions[0]);
     }
   };
 
+  const handleOpenPreview = (e: React.MouseEvent, style: Hairstyle) => {
+    e.stopPropagation();
+    setPreviewStyle(style);
+    setIsPreviewOpen(true);
+  };
+
   // Calculations
-  const totalPrice = selectedStyle.priceFrom;
-  const depositAmount = selectedStyle.depositAmount;
+  const totalPrice = selectedStyle ? selectedStyle.priceFrom : 200;
+  const depositAmount = selectedStyle?.depositAmount ?? 50;
   const balanceDue = paymentOption === "deposit" ? totalPrice - depositAmount : 0;
   const amountToPayNow = paymentOption === "deposit" ? depositAmount : totalPrice;
 
@@ -89,7 +176,7 @@ function BookingEngine() {
     weekday: "long",
     day: "numeric",
     month: "long",
-    year: "numeric"
+    year: "numeric",
   });
 
   const nextStep = () => {
@@ -132,7 +219,10 @@ function BookingEngine() {
   const handleCompleteBooking = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreeTerms) {
-      showToast("error", "Please review and agree to the booking terms and cancellation policy.");
+      showToast(
+        "error",
+        "Please review and agree to the booking terms and cancellation policy."
+      );
       return;
     }
 
@@ -157,7 +247,7 @@ function BookingEngine() {
       depositPaid: amountToPayNow,
       balanceDue: balanceDue,
       paymentOption: paymentOption,
-      location: SALON_INFO.address
+      location: SALON_INFO.address,
     };
 
     try {
@@ -165,7 +255,7 @@ function BookingEngine() {
       await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookingPayload)
+        body: JSON.stringify(bookingPayload),
       });
     } catch {
       // Fallback
@@ -176,7 +266,10 @@ function BookingEngine() {
       localStorage.setItem("afriglow_latest_booking", JSON.stringify(bookingPayload));
     } catch {}
 
-    showToast("success", "Appointment confirmed! Redirecting to your confirmation details...");
+    showToast(
+      "success",
+      "Appointment confirmed! Redirecting to your confirmation details..."
+    );
     setTimeout(() => {
       router.push(`/booking/confirmation?id=${bookingPayload.bookingNumber}`);
     }, 800);
@@ -205,7 +298,7 @@ function BookingEngine() {
               { step: 3, label: "Time" },
               { step: 4, label: "Details" },
               { step: 5, label: "Summary" },
-              { step: 6, label: "Payment" }
+              { step: 6, label: "Payment" },
             ].map((s) => {
               const isCurrent = currentStep === s.step;
               const isDone = currentStep > s.step;
@@ -249,57 +342,127 @@ function BookingEngine() {
                     Step 1 — Choose Your Hairstyle
                   </h2>
                   <p className="text-neutral-500 text-xs sm:text-sm">
-                    Select a style from our catalogue or choose length options.
+                    Select a style from our catalogue. Tap on any photo to view full-size preview.
                   </p>
                 </div>
 
+                {/* Filter & Search Bar for Step 1 */}
+                <div className="space-y-3 pt-2">
+                  <div className="relative">
+                    <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search hairstyles (e.g. Knotless, Passion Twists, Fulani)..."
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border border-[#EAE2D5] rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:bg-white transition-all"
+                    />
+                  </div>
+
+                  {/* Category Pills */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                    {CATEGORIES_LIST.map((cat) => {
+                      const isCatSelected = selectedCategory === cat;
+                      return (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setSelectedCategory(cat)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                            isCatSelected
+                              ? "bg-[#14100D] text-[#FAF7F2] border border-[#D4AF37]"
+                              : "bg-[#FAF7F2] text-neutral-600 border border-[#EAE2D5] hover:bg-[#F2ECE1]"
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Hairstyle Selection Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1">
-                  {HAIRSTYLES_DATA.map((style) => {
-                    const isSelected = selectedStyle.id === style.id;
-                    return (
-                      <div
-                        key={style.id}
-                        onClick={() => handleSelectStyle(style)}
-                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex gap-4 items-center ${
-                          isSelected
-                            ? "border-[#D4AF37] bg-[#FAF6EE] shadow-md ring-2 ring-[#D4AF37]/30"
-                            : "border-[#EAE2D5] bg-white hover:border-[#D4AF37]/50"
-                        }`}
-                      >
-                        <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-neutral-100">
-                          <Image
-                            src={style.images[0] || "/images/logo.png"}
-                            alt={style.name}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-[#8C6B16] block">
-                            {style.category}
-                          </span>
-                          <h3 className="font-serif font-bold text-sm sm:text-base text-neutral-900 truncate">
-                            {style.name}
-                          </h3>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-neutral-500">
-                            <span className="font-semibold text-neutral-900">
-                              From ${style.priceFrom} AUD
-                            </span>
-                            <span>•</span>
-                            <span>{style.durationLabel}</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[520px] overflow-y-auto pr-1">
+                  {filteredHairstyles.length === 0 ? (
+                    <div className="col-span-full py-12 text-center text-neutral-500 text-sm">
+                      No hairstyles found matching your search.
+                    </div>
+                  ) : (
+                    filteredHairstyles.map((style) => {
+                      const isSelected = selectedStyle?.id === style.id;
+                      return (
+                        <div
+                          key={style.id}
+                          onClick={() => handleSelectStyle(style)}
+                          className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex gap-4 items-center group relative ${
+                            isSelected
+                              ? "border-[#D4AF37] bg-[#FAF6EE] shadow-md ring-2 ring-[#D4AF37]/30"
+                              : "border-[#EAE2D5] bg-white hover:border-[#D4AF37]/50 hover:bg-[#FCFAF7]"
+                          }`}
+                        >
+                          {/* Image Thumbnail with Zoom Button */}
+                          <div
+                            onClick={(e) => handleOpenPreview(e, style)}
+                            title="Click to view full photo"
+                            className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden flex-shrink-0 bg-neutral-100 group/img cursor-zoom-in"
+                          >
+                            <Image
+                              src={style.images[0] || "/images/logo.png"}
+                              alt={style.name}
+                              fill
+                              className="object-cover group-hover/img:scale-105 transition-transform duration-300"
+                            />
+                            {/* Overlay zoom prompt */}
+                            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="p-1.5 rounded-full bg-black/60 text-white backdrop-blur-sm">
+                                <ZoomIn className="w-4 h-4 text-[#D4AF37]" />
+                              </span>
+                            </div>
+
+                            {/* Mobile visual zoom badge */}
+                            <div className="absolute bottom-1 right-1 sm:hidden">
+                              <span className="p-1 rounded-md bg-black/60 text-white backdrop-blur-sm flex items-center justify-center">
+                                <ZoomIn className="w-3 h-3 text-[#D4AF37]" />
+                              </span>
+                            </div>
                           </div>
+
+                          <div className="flex-1 min-w-0 pr-1">
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-[#8C6B16] block truncate">
+                              {style.category}
+                            </span>
+                            <h3 className="font-serif font-bold text-sm sm:text-base text-neutral-900 leading-snug truncate">
+                              {style.name}
+                            </h3>
+                            <div className="flex items-center gap-1.5 mt-1 text-xs text-neutral-500">
+                              <span className="font-semibold text-neutral-900">
+                                From ${style.priceFrom} AUD
+                              </span>
+                              <span>•</span>
+                              <span className="truncate">{style.durationLabel}</span>
+                            </div>
+                            <div className="mt-2 flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={(e) => handleOpenPreview(e, style)}
+                                className="text-[11px] font-semibold text-[#8C6B16] hover:underline flex items-center gap-1"
+                              >
+                                <ZoomIn className="w-3 h-3" /> Preview Photo
+                              </button>
+                            </div>
+                          </div>
+
+                          {isSelected && (
+                            <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
+                          )}
                         </div>
-                        {isSelected && (
-                          <CheckCircle2 className="w-5 h-5 text-[#D4AF37] flex-shrink-0" />
-                        )}
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </div>
 
                 {/* Length Options */}
-                {selectedStyle.lengthOptions.length > 0 && (
+                {selectedStyle && selectedStyle.lengthOptions && selectedStyle.lengthOptions.length > 0 && (
                   <div className="pt-4 border-t border-[#F2ECE1] space-y-3">
                     <label className="text-xs font-bold uppercase tracking-wider text-neutral-700 block">
                       Select Preferred Length
@@ -366,7 +529,11 @@ function BookingEngine() {
                             : "bg-[#FAF7F2] text-neutral-800 border-[#EAE2D5] hover:bg-[#F5EFE4] hover:border-[#D4AF37]/50"
                         }`}
                       >
-                        <span className={`text-[11px] uppercase font-bold tracking-wider block ${isSelected ? "text-[#D4AF37]" : "text-neutral-500"}`}>
+                        <span
+                          className={`text-[11px] uppercase font-bold tracking-wider block ${
+                            isSelected ? "text-[#D4AF37]" : "text-neutral-500"
+                          }`}
+                        >
                           {dayName}
                         </span>
                         <span className="font-serif text-2xl font-bold block my-1">
@@ -430,11 +597,19 @@ function BookingEngine() {
                             : "bg-[#FAF7F2] text-neutral-800 border-[#EAE2D5] hover:bg-[#F2ECE1]"
                         }`}
                       >
-                        <Clock className={`w-4 h-4 ${isSelected ? "text-[#D4AF37]" : "text-neutral-400"}`} />
+                        <Clock
+                          className={`w-4 h-4 ${
+                            isSelected ? "text-[#D4AF37]" : "text-neutral-400"
+                          }`}
+                        />
                         <span className="font-serif text-lg font-bold">
                           {slot}
                         </span>
-                        <span className={`text-[10px] font-medium ${isSelected ? "text-[#D4AF37]" : "text-emerald-700"}`}>
+                        <span
+                          className={`text-[10px] font-medium ${
+                            isSelected ? "text-[#D4AF37]" : "text-emerald-700"
+                          }`}
+                        >
                           Available Slot
                         </span>
                       </button>
@@ -443,7 +618,8 @@ function BookingEngine() {
                 </div>
 
                 <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE2D5] text-xs text-neutral-600">
-                  ⚡ <strong>Note:</strong> Braiding sessions run for approximately {selectedStyle.durationHours} hours. Please ensure your schedule allows ample time for finishing.
+                  ⚡ <strong>Note:</strong> Braiding sessions run for approximately{" "}
+                  {selectedStyle?.durationHours || 4} hours. Please ensure your schedule allows ample time for finishing.
                 </div>
 
                 <div className="pt-6 flex items-center justify-between">
@@ -485,7 +661,9 @@ function BookingEngine() {
                         type="text"
                         required
                         value={clientInfo.fullName}
-                        onChange={(e) => setClientInfo({ ...clientInfo, fullName: e.target.value })}
+                        onChange={(e) =>
+                          setClientInfo({ ...clientInfo, fullName: e.target.value })
+                        }
                         placeholder="e.g. Jessica Smith"
                         className="input-gold"
                       />
@@ -498,7 +676,9 @@ function BookingEngine() {
                         type="email"
                         required
                         value={clientInfo.email}
-                        onChange={(e) => setClientInfo({ ...clientInfo, email: e.target.value })}
+                        onChange={(e) =>
+                          setClientInfo({ ...clientInfo, email: e.target.value })
+                        }
                         placeholder="e.g. jessica@example.com"
                         className="input-gold"
                       />
@@ -514,7 +694,9 @@ function BookingEngine() {
                         type="tel"
                         required
                         value={clientInfo.phone}
-                        onChange={(e) => setClientInfo({ ...clientInfo, phone: e.target.value })}
+                        onChange={(e) =>
+                          setClientInfo({ ...clientInfo, phone: e.target.value })
+                        }
                         placeholder="e.g. 0451 000 000"
                         className="input-gold"
                       />
@@ -525,7 +707,12 @@ function BookingEngine() {
                       </label>
                       <select
                         value={clientInfo.preferredContact}
-                        onChange={(e) => setClientInfo({ ...clientInfo, preferredContact: e.target.value })}
+                        onChange={(e) =>
+                          setClientInfo({
+                            ...clientInfo,
+                            preferredContact: e.target.value,
+                          })
+                        }
                         className="input-gold"
                       >
                         <option value="SMS & Phone">SMS & Phone Call</option>
@@ -542,12 +729,23 @@ function BookingEngine() {
                       </label>
                       <select
                         value={clientInfo.hairLength}
-                        onChange={(e) => setClientInfo({ ...clientInfo, hairLength: e.target.value })}
+                        onChange={(e) =>
+                          setClientInfo({
+                            ...clientInfo,
+                            hairLength: e.target.value,
+                          })
+                        }
                         className="input-gold"
                       >
-                        <option value="Short (Above Chin / TWA)">Short (Above Chin / TWA)</option>
-                        <option value="Medium (Shoulder Length)">Medium (Shoulder Length)</option>
-                        <option value="Long (Armpit / Mid-Back)">Long (Armpit / Mid-Back)</option>
+                        <option value="Short (Above Chin / TWA)">
+                          Short (Above Chin / TWA)
+                        </option>
+                        <option value="Medium (Shoulder Length)">
+                          Medium (Shoulder Length)
+                        </option>
+                        <option value="Long (Armpit / Mid-Back)">
+                          Long (Armpit / Mid-Back)
+                        </option>
                         <option value="Very Long">Very Long</option>
                       </select>
                     </div>
@@ -558,7 +756,12 @@ function BookingEngine() {
                       <input
                         type="text"
                         value={clientInfo.hairCondition}
-                        onChange={(e) => setClientInfo({ ...clientInfo, hairCondition: e.target.value })}
+                        onChange={(e) =>
+                          setClientInfo({
+                            ...clientInfo,
+                            hairCondition: e.target.value,
+                          })
+                        }
                         placeholder="e.g. 4C natural, relaxed, transition"
                         className="input-gold"
                       />
@@ -572,7 +775,12 @@ function BookingEngine() {
                     <textarea
                       rows={3}
                       value={clientInfo.specialRequests}
-                      onChange={(e) => setClientInfo({ ...clientInfo, specialRequests: e.target.value })}
+                      onChange={(e) =>
+                        setClientInfo({
+                          ...clientInfo,
+                          specialRequests: e.target.value,
+                        })
+                      }
                       placeholder="Any scalp sensitivity, preferred extension colour, or questions..."
                       className="input-gold resize-none"
                     />
@@ -617,7 +825,9 @@ function BookingEngine() {
                       <h3 className="font-serif text-xl font-bold text-[#14100D]">
                         {selectedStyle.name}
                       </h3>
-                      <p className="text-xs text-neutral-500">Length: {selectedLength}</p>
+                      <p className="text-xs text-neutral-500">
+                        Length: {selectedLength}
+                      </p>
                     </div>
                     <div className="text-right">
                       <span className="font-serif text-2xl font-bold text-[#14100D]">
@@ -636,7 +846,9 @@ function BookingEngine() {
                     </div>
                     <div>
                       <span className="text-neutral-400 block text-xs">Time:</span>
-                      <strong className="text-neutral-900">{selectedTime} ({selectedStyle.durationLabel})</strong>
+                      <strong className="text-neutral-900">
+                        {selectedTime} ({selectedStyle.durationLabel})
+                      </strong>
                     </div>
                     <div>
                       <span className="text-neutral-400 block text-xs">Client:</span>
@@ -644,11 +856,17 @@ function BookingEngine() {
                     </div>
                     <div>
                       <span className="text-neutral-400 block text-xs">Contact:</span>
-                      <strong className="text-neutral-900">{clientInfo.phone} • {clientInfo.email}</strong>
+                      <strong className="text-neutral-900">
+                        {clientInfo.phone} • {clientInfo.email}
+                      </strong>
                     </div>
                     <div className="sm:col-span-2">
-                      <span className="text-neutral-400 block text-xs">Salon Location:</span>
-                      <strong className="text-neutral-900">{SALON_INFO.address}</strong>
+                      <span className="text-neutral-400 block text-xs">
+                        Salon Location:
+                      </span>
+                      <strong className="text-neutral-900">
+                        {SALON_INFO.address}
+                      </strong>
                     </div>
                   </div>
                 </div>
@@ -657,7 +875,9 @@ function BookingEngine() {
                 <div className="p-6 rounded-2xl bg-white border border-[#EAE2D5] space-y-3 text-sm">
                   <div className="flex justify-between text-neutral-600">
                     <span>Total Service Price:</span>
-                    <span className="font-semibold text-neutral-900">${totalPrice} AUD</span>
+                    <span className="font-semibold text-neutral-900">
+                      ${totalPrice} AUD
+                    </span>
                   </div>
                   <div className="flex justify-between text-[#8C6B16] font-semibold">
                     <span>Booking Deposit Fee (Required Now):</span>
@@ -665,7 +885,9 @@ function BookingEngine() {
                   </div>
                   <div className="flex justify-between text-neutral-600 pt-2 border-t border-[#F2ECE1]">
                     <span>Remaining Balance (Due on Appointment Day):</span>
-                    <span className="font-semibold text-neutral-900">${totalPrice - depositAmount} AUD</span>
+                    <span className="font-semibold text-neutral-900">
+                      ${totalPrice - depositAmount} AUD
+                    </span>
                   </div>
                 </div>
 
@@ -720,7 +942,8 @@ function BookingEngine() {
                       ${depositAmount} AUD
                     </span>
                     <p className="text-xs text-neutral-500 mt-1">
-                      Pay remaining balance of ${totalPrice - depositAmount} AUD at salon.
+                      Pay remaining balance of ${totalPrice - depositAmount} AUD at
+                      salon.
                     </p>
                   </div>
 
@@ -753,7 +976,8 @@ function BookingEngine() {
                 <div className="p-6 rounded-2xl bg-[#FAF7F2] border border-[#EAE2D5] space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-neutral-700 flex items-center gap-1.5">
-                      <CreditCard className="w-4 h-4 text-[#D4AF37]" /> Credit / Debit Card (Stripe Checkout)
+                      <CreditCard className="w-4 h-4 text-[#D4AF37]" /> Credit /
+                      Debit Card (Stripe Checkout)
                     </span>
                     <span className="text-[11px] text-neutral-500 flex items-center gap-1">
                       <Lock className="w-3 h-3 text-emerald-600" /> 256-Bit Encrypted
@@ -762,7 +986,9 @@ function BookingEngine() {
 
                   <div className="space-y-3">
                     <div>
-                      <label className="text-xs text-neutral-600 block mb-1">Card Number</label>
+                      <label className="text-xs text-neutral-600 block mb-1">
+                        Card Number
+                      </label>
                       <input
                         type="text"
                         defaultValue="•••• •••• •••• 4242"
@@ -772,7 +998,9 @@ function BookingEngine() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-xs text-neutral-600 block mb-1">Expiry</label>
+                        <label className="text-xs text-neutral-600 block mb-1">
+                          Expiry
+                        </label>
                         <input
                           type="text"
                           defaultValue="12/28"
@@ -781,7 +1009,9 @@ function BookingEngine() {
                         />
                       </div>
                       <div>
-                        <label className="text-xs text-neutral-600 block mb-1">CVC</label>
+                        <label className="text-xs text-neutral-600 block mb-1">
+                          CVC
+                        </label>
                         <input
                           type="text"
                           defaultValue="•••"
@@ -803,7 +1033,23 @@ function BookingEngine() {
                       className="mt-1 w-4 h-4 text-[#D4AF37] rounded border-gray-300 focus:ring-[#D4AF37]"
                     />
                     <span>
-                      I agree to the <Link href="/terms" target="_blank" className="text-[#8C6B16] font-semibold underline">Terms & Conditions</Link> and acknowledge the <Link href="/cancellation-policy" target="_blank" className="text-[#8C6B16] font-semibold underline">Cancellation Policy</Link> (24/48h notice for rescheduling).
+                      I agree to the{" "}
+                      <Link
+                        href="/terms"
+                        target="_blank"
+                        className="text-[#8C6B16] font-semibold underline"
+                      >
+                        Terms & Conditions
+                      </Link>{" "}
+                      and acknowledge the{" "}
+                      <Link
+                        href="/cancellation-policy"
+                        target="_blank"
+                        className="text-[#8C6B16] font-semibold underline"
+                      >
+                        Cancellation Policy
+                      </Link>{" "}
+                      (24/48h notice for rescheduling).
                     </span>
                   </label>
                 </div>
@@ -825,7 +1071,8 @@ function BookingEngine() {
                       <span>Processing Payment...</span>
                     ) : (
                       <>
-                        <Lock className="w-4 h-4" /> Pay ${amountToPayNow} AUD & Confirm
+                        <Lock className="w-4 h-4" /> Pay ${amountToPayNow} AUD &
+                        Confirm
                       </>
                     )}
                   </button>
@@ -845,27 +1092,36 @@ function BookingEngine() {
               </div>
 
               {/* Chosen Style Preview */}
-              <div className="flex items-center gap-3">
-                <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-[#D4AF37]/40 flex-shrink-0 bg-neutral-800">
-                  <Image
-                    src={selectedStyle.images[0] || "/images/logo.png"}
-                    alt={selectedStyle.name}
-                    fill
-                    className="object-cover"
-                  />
+              {selectedStyle && (
+                <div className="flex items-center gap-3">
+                  <div
+                    onClick={(e) => handleOpenPreview(e, selectedStyle)}
+                    title="Click to enlarge"
+                    className="relative w-16 h-16 rounded-xl overflow-hidden border border-[#D4AF37]/40 flex-shrink-0 bg-neutral-800 cursor-zoom-in group/sideimg"
+                  >
+                    <Image
+                      src={selectedStyle.images?.[0] || "/images/logo.png"}
+                      alt={selectedStyle.name}
+                      fill
+                      className="object-cover group-hover/sideimg:scale-105 transition-transform"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/sideimg:opacity-100 transition-opacity flex items-center justify-center">
+                      <ZoomIn className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    </div>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[10px] uppercase tracking-wider text-[#D4AF37] font-semibold block">
+                      {selectedStyle.category}
+                    </span>
+                    <h4 className="font-serif font-bold text-sm text-white truncate">
+                      {selectedStyle.name}
+                    </h4>
+                    <span className="text-xs text-neutral-400">
+                      {selectedLength}
+                    </span>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <span className="text-[10px] uppercase tracking-wider text-[#D4AF37] font-semibold block">
-                    {selectedStyle.category}
-                  </span>
-                  <h4 className="font-serif font-bold text-sm text-white truncate">
-                    {selectedStyle.name}
-                  </h4>
-                  <span className="text-xs text-neutral-400">
-                    {selectedLength}
-                  </span>
-                </div>
-              </div>
+              )}
 
               {/* Date & Time */}
               <div className="space-y-2.5 text-xs text-neutral-300 pt-4 border-t border-neutral-800">
@@ -875,7 +1131,9 @@ function BookingEngine() {
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Clock className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>{selectedTime} ({selectedStyle.durationLabel})</span>
+                  <span>
+                    {selectedTime} ({selectedStyle?.durationLabel || "Approx. 4 hours"})
+                  </span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
@@ -910,13 +1168,38 @@ function BookingEngine() {
           </div>
         </div>
       </div>
+
+      {/* Full Size Image Preview Modal */}
+      {previewStyle && (
+        <ImagePreviewModal
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          imageItem={{
+            src: previewStyle.images[0] || "/images/logo.png",
+            title: previewStyle.name,
+            category: previewStyle.category,
+            priceFrom: previewStyle.priceFrom,
+            durationLabel: previewStyle.durationLabel,
+            description: previewStyle.shortDescription || previewStyle.description,
+            actionLabel: "Select This Style",
+            onAction: () => handleSelectStyle(previewStyle),
+          }}
+          galleryImages={previewStyle.images}
+        />
+      )}
     </div>
   );
 }
 
 export default function BookingPage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-neutral-500 font-serif">Loading Booking Calendar...</div>}>
+    <Suspense
+      fallback={
+        <div className="py-20 text-center text-neutral-500 font-serif">
+          Loading Booking Calendar...
+        </div>
+      }
+    >
       <BookingEngine />
     </Suspense>
   );

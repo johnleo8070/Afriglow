@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { HAIRSTYLES_DATA, SALON_INFO } from "@/lib/hairstyles-data";
 import HairstyleCard from "@/components/HairstyleCard";
+import HairstyleGallery from "@/components/HairstyleGallery";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -48,46 +49,9 @@ export default async function HairstyleDetailPage({ params }: PageProps) {
 
         {/* Top Product Showcase Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left: Gallery */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="relative aspect-[4/3] w-full rounded-3xl overflow-hidden border border-[#EAE2D5] shadow-lg bg-neutral-100">
-              <Image
-                src={style.images[0] || "/images/logo.png"}
-                alt={style.name}
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute top-4 left-4 flex gap-2">
-                <span className="badge-dark text-xs backdrop-blur-md">
-                  {style.category}
-                </span>
-                {style.popular && (
-                  <span className="badge-gold text-xs shadow-sm">
-                    <Sparkles className="w-3 h-3" /> Most Requested
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Thumbnail previews if multiple */}
-            {style.images.length > 1 && (
-              <div className="grid grid-cols-3 gap-3">
-                {style.images.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="relative aspect-square rounded-xl overflow-hidden border-2 border-[#D4AF37]/30 bg-neutral-100"
-                  >
-                    <Image
-                      src={img}
-                      alt={`${style.name} preview ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+          {/* Left: Interactive Gallery with Full Image Preview Lightbox */}
+          <div className="lg:col-span-7">
+            <HairstyleGallery style={style} />
           </div>
 
           {/* Right: Details & Booking Panel */}
