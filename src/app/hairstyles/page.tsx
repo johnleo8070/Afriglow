@@ -3,14 +3,15 @@
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, Sparkles, Filter, Scissors, Clock } from "lucide-react";
-import { HAIRSTYLES_DATA, CATEGORIES_LIST, type Hairstyle } from "@/lib/hairstyles-data";
+import { CATEGORIES_LIST, type Hairstyle } from "@/lib/hairstyles-data";
 import HairstyleCard from "@/components/HairstyleCard";
 
 function HairstylesCatalogContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "All Styles";
 
-  const [hairstylesList, setHairstylesList] = useState<Hairstyle[]>(HAIRSTYLES_DATA);
+  const [hairstylesList, setHairstylesList] = useState<Hairstyle[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [searchQuery, setSearchQuery] = useState("");
   const [maintenanceFilter, setMaintenanceFilter] = useState<string>("All");
@@ -21,11 +22,16 @@ function HairstylesCatalogContent() {
     fetch("/api/hairstyles")
       .then((res) => res.json())
       .then((data) => {
-        if (data.success && data.data && data.data.length > 0) {
+        if (data.success && Array.isArray(data.data)) {
           setHairstylesList(data.data);
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Error loading hairstyles catalogue:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const filteredStyles = useMemo(() => {
@@ -157,7 +163,18 @@ function HairstylesCatalogContent() {
         </div>
 
         {/* Hairstyle Grid */}
-        {filteredStyles.length > 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n} className="rounded-3xl border border-[#EAE2D5] bg-white p-4 space-y-4 animate-pulse">
+                <div className="aspect-[4/3] rounded-2xl bg-neutral-200" />
+                <div className="h-5 bg-neutral-200 rounded w-3/4" />
+                <div className="h-4 bg-neutral-100 rounded w-full" />
+                <div className="h-10 bg-neutral-200 rounded-xl mt-4" />
+              </div>
+            ))}
+          </div>
+        ) : filteredStyles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredStyles.map((styleItem) => (
               <HairstyleCard key={styleItem.id} styleItem={styleItem} />
@@ -170,18 +187,22 @@ function HairstylesCatalogContent() {
               No hairstyles found
             </h3>
             <p className="text-neutral-500 text-sm max-w-md mx-auto">
-              We couldn&apos;t find any styles matching your search or filters. Try adjusting your query or resetting filters.
+              {hairstylesList.length === 0
+                ? "Live catalogue styles are currently being prepared. Check back shortly or book a custom styling session!"
+                : "We couldn't find any styles matching your search or filters. Try adjusting your query or resetting filters."}
             </p>
-            <button
-              onClick={() => {
-                setSelectedCategory("All Styles");
-                setSearchQuery("");
-                setMaintenanceFilter("All");
-              }}
-              className="btn-gold !py-2.5 !px-6 text-xs font-semibold"
-            >
-              View All Hairstyles
-            </button>
+            {hairstylesList.length > 0 && (
+              <button
+                onClick={() => {
+                  setSelectedCategory("All Styles");
+                  setSearchQuery("");
+                  setMaintenanceFilter("All");
+                }}
+                className="btn-gold !py-2.5 !px-6 text-xs font-semibold"
+              >
+                View All Hairstyles
+              </button>
+            )}
           </div>
         )}
       </div>

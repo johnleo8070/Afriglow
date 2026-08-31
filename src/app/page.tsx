@@ -17,21 +17,27 @@ import {
   Scissors,
   Crown
 } from "lucide-react";
-import { HAIRSTYLES_DATA, SALON_INFO, type Hairstyle } from "@/lib/hairstyles-data";
+import { SALON_INFO, type Hairstyle } from "@/lib/hairstyles-data";
 import HairstyleCard from "@/components/HairstyleCard";
 
 export default function HomePage() {
-  const [featuredStyles, setFeaturedStyles] = useState<Hairstyle[]>(HAIRSTYLES_DATA.slice(0, 6));
+  const [featuredStyles, setFeaturedStyles] = useState<Hairstyle[]>([]);
+  const [loadingStyles, setLoadingStyles] = useState<boolean>(true);
 
   useEffect(() => {
     fetch("/api/hairstyles")
       .then((res) => res.json())
       .then((data) => {
-        if (data.success && data.data && data.data.length > 0) {
+        if (data.success && Array.isArray(data.data)) {
           setFeaturedStyles(data.data.slice(0, 6));
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Error loading hairstyles for homepage:", err);
+      })
+      .finally(() => {
+        setLoadingStyles(false);
+      });
   }, []);
 
   const reviews = [
@@ -190,7 +196,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. FEATURED HAIRSTYLES */}
+      {/* 3. FEATURED HAIRSTYLES (FETCHED STRICTLY FROM LIVE DATABASE) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div className="space-y-2">
@@ -210,21 +216,58 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Hairstyle Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredStyles.map((styleItem) => (
-            <HairstyleCard key={styleItem.id} styleItem={styleItem} />
-          ))}
-        </div>
+        {/* Hairstyle Cards Grid / Live DB State */}
+        {loadingStyles ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="rounded-3xl border border-[#EAE2D5] bg-white p-4 space-y-4 animate-pulse">
+                <div className="aspect-[4/3] rounded-2xl bg-neutral-200" />
+                <div className="h-5 bg-neutral-200 rounded w-3/4" />
+                <div className="h-4 bg-neutral-100 rounded w-full" />
+                <div className="h-10 bg-neutral-200 rounded-xl mt-4" />
+              </div>
+            ))}
+          </div>
+        ) : featuredStyles.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredStyles.map((styleItem) => (
+                <HairstyleCard key={styleItem.id} styleItem={styleItem} />
+              ))}
+            </div>
 
-        <div className="mt-12 text-center">
-          <Link
-            href="/hairstyles"
-            className="btn-dark inline-flex items-center gap-2 font-semibold"
-          >
-            Explore Complete Catalogue <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
-          </Link>
-        </div>
+            <div className="mt-12 text-center">
+              <Link
+                href="/hairstyles"
+                className="btn-dark inline-flex items-center gap-2 font-semibold"
+              >
+                Explore Complete Catalogue <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-16 px-6 bg-white rounded-3xl border border-[#EAE2D5] shadow-sm space-y-6 max-w-3xl mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-[#FAF7F2] border border-[#D4AF37]/40 text-[#8C6B16] flex items-center justify-center mx-auto">
+              <Scissors className="w-8 h-8" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-serif text-2xl font-bold text-[#14100D]">
+                Custom Braiding & Protective Hairstyles
+              </h3>
+              <p className="text-neutral-600 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+                We craft custom knotless braids, box braids, cornrows, and protective twists tailored to your natural hair and style. Book your session or browse our categories below.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+              <Link href="/booking" className="btn-gold !py-3.5 !px-8 text-sm font-bold flex items-center gap-2">
+                <Calendar className="w-4 h-4" /> Book Custom Appointment
+              </Link>
+              <Link href="/hairstyles" className="btn-white !py-3.5 !px-8 text-sm font-semibold flex items-center gap-2">
+                Browse Hair Categories
+              </Link>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* 4. STYLE CATEGORIES */}

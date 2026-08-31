@@ -32,14 +32,47 @@ import {
 import { showToast } from "@/components/Toast";
 import ImagePreviewModal from "@/components/ImagePreviewModal";
 
+const DEFAULT_CUSTOM_STYLE: Hairstyle = {
+  id: "custom-booking",
+  slug: "custom-styling",
+  name: "Custom Braiding & Protective Style",
+  category: "Custom Styles",
+  shortDescription: "Custom protective style or consultation appointment with Rose.",
+  description: "Book an appointment for your tailored braiding style. You can discuss length, size, and design details directly with Rose.",
+  priceFrom: 200,
+  depositAmount: 50,
+  durationHours: 4,
+  durationLabel: "Approx. 4 hours",
+  hairIncluded: false,
+  hairIncludedNote: "Clients can bring their preferred extensions or discuss with Rose in-salon.",
+  lengthOptions: ["Mid-Back (24\")", "Waist Length (30\")", "Custom Length"],
+  maintenanceLevel: "Low",
+  recommendedWearTime: "6 – 8 Weeks",
+  images: ["/images/hero_showcase.png"],
+  featured: true,
+  popular: true,
+  rating: 5.0,
+  reviewCount: 24,
+  whatsIncluded: [
+    "Precision scalp sectioning & parting",
+    "Tension-free braiding technique",
+    "Scalp hydration & organic edge control",
+    "Hot water setting & finishing oil sheen",
+  ],
+  prepInstructions: [
+    "Arrive with clean, dry, and detangled hair.",
+    "Hair should be blown out straight from roots to ends.",
+  ],
+};
+
 function BookingEngine() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const preselectedSlug = searchParams.get("style");
 
-  // Dynamic backend hairstyles list with fallback
-  const [hairstylesList, setHairstylesList] = useState<Hairstyle[]>(HAIRSTYLES_DATA);
+  // Dynamic backend hairstyles list (fetched live from DB)
+  const [hairstylesList, setHairstylesList] = useState<Hairstyle[]>([DEFAULT_CUSTOM_STYLE]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All Styles");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -67,11 +100,9 @@ function BookingEngine() {
   }, [currentStep]);
 
   // Step 1: Style Selection
-  const initialStyle =
-    hairstylesList.find((s) => s.slug === preselectedSlug) || hairstylesList[0];
-  const [selectedStyle, setSelectedStyle] = useState<Hairstyle>(initialStyle);
+  const [selectedStyle, setSelectedStyle] = useState<Hairstyle>(DEFAULT_CUSTOM_STYLE);
   const [selectedLength, setSelectedLength] = useState<string>(
-    initialStyle.lengthOptions?.[0] || "Mid-Back"
+    DEFAULT_CUSTOM_STYLE.lengthOptions?.[0] || "Mid-Back (24\")"
   );
 
   // Fetch live hairstyles from backend API on mount
@@ -79,7 +110,7 @@ function BookingEngine() {
     fetch("/api/hairstyles")
       .then((res) => res.json())
       .then((data) => {
-        if (data.success && data.data && data.data.length > 0) {
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
           setHairstylesList(data.data);
           // If a preselected slug exists, match it with live data
           if (preselectedSlug) {
@@ -91,12 +122,18 @@ function BookingEngine() {
               if (matched.lengthOptions && matched.lengthOptions.length > 0) {
                 setSelectedLength(matched.lengthOptions[0]);
               }
+            } else {
+              setSelectedStyle(data.data[0]);
+              if (data.data[0].lengthOptions?.[0]) setSelectedLength(data.data[0].lengthOptions[0]);
             }
+          } else {
+            setSelectedStyle(data.data[0]);
+            if (data.data[0].lengthOptions?.[0]) setSelectedLength(data.data[0].lengthOptions[0]);
           }
         }
       })
       .catch((err) => {
-        console.error("Failed to load hairstyles from API, using fallback data:", err);
+        console.error("Failed to load hairstyles from API:", err);
       });
   }, [preselectedSlug]);
 

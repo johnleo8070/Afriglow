@@ -14,7 +14,8 @@ import {
   MapPin,
   Heart
 } from "lucide-react";
-import { HAIRSTYLES_DATA, SALON_INFO } from "@/lib/hairstyles-data";
+import { HAIRSTYLES_DATA, SALON_INFO, type Hairstyle } from "@/lib/hairstyles-data";
+import { getSupabaseAdmin, getSupabasePublic } from "@/lib/supabase";
 import HairstyleCard from "@/components/HairstyleCard";
 import HairstyleGallery from "@/components/HairstyleGallery";
 
@@ -22,17 +23,109 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+async function getHairstyleBySlug(slug: string): Promise<{ style: Hairstyle | null; relatedStyles: Hairstyle[] }> {
+  try {
+    const supabase = getSupabaseAdmin() || getSupabasePublic();
+    if (supabase) {
+      const { data: dbStyle } = await supabase
+        .from("hairstyles")
+        .select("*")
+        .eq("slug", slug)
+        .single();
+
+      if (dbStyle) {
+        const formattedStyle: Hairstyle = {
+          id: dbStyle.id.toString(),
+          slug: dbStyle.slug,
+          name: dbStyle.name,
+          category: dbStyle.category as any,
+          shortDescription: dbStyle.short_description || "",
+          description: dbStyle.description || "",
+          priceFrom: parseFloat(dbStyle.price_from || "0"),
+          depositAmount: parseFloat(dbStyle.deposit_amount || "50"),
+          durationHours: parseFloat(dbStyle.duration_hours || "4"),
+          durationLabel: dbStyle.duration_label || "Approx. 4 hours",
+          hairIncluded: Boolean(dbStyle.hair_included),
+          hairIncludedNote: dbStyle.hair_included_note || "",
+          lengthOptions: Array.isArray(dbStyle.length_options) ? dbStyle.length_options : ["Mid-Back"],
+          maintenanceLevel: (dbStyle.maintenance_level as any) || "Low",
+          recommendedWearTime: dbStyle.recommended_wear_time || "6 - 8 Weeks",
+          images: Array.isArray(dbStyle.images) && dbStyle.images.length > 0 ? dbStyle.images : ["/images/logo.png"],
+          featured: Boolean(dbStyle.featured),
+          popular: Boolean(dbStyle.popular),
+          rating: 5.0,
+          reviewCount: 24,
+          whatsIncluded: Array.isArray(dbStyle.whats_included) && dbStyle.whats_included.length > 0 ? dbStyle.whats_included : [
+            "Precision scalp sectioning & parting",
+            "Tension-free feed-in braiding technique",
+            "Scalp hydration & organic edge control application",
+            "Hot water setting with silky soft ends treatment",
+            "Mousse setting & finishing oil sheen",
+          ],
+          prepInstructions: Array.isArray(dbStyle.prep_instructions) && dbStyle.prep_instructions.length > 0 ? dbStyle.prep_instructions : [
+            "Arrive with your natural hair freshly washed, clean, and completely dry.",
+            "Hair must be thoroughly detangled and blown out straight from roots to ends.",
+            "Do not apply heavy oils or butters immediately before your appointment.",
+          ],
+        };
+
+        const { data: relatedData } = await supabase
+          .from("hairstyles")
+          .select("*")
+          .neq("id", dbStyle.id)
+          .limit(3);
+
+        const related: Hairstyle[] = (relatedData || []).map((item) => ({
+          id: item.id.toString(),
+          slug: item.slug,
+          name: item.name,
+          category: item.category as any,
+          shortDescription: item.short_description || "",
+          description: item.description || "",
+          priceFrom: parseFloat(item.price_from || "0"),
+          depositAmount: parseFloat(item.deposit_amount || "50"),
+          durationHours: parseFloat(item.duration_hours || "4"),
+          durationLabel: item.duration_label || "Approx. 4 hours",
+          hairIncluded: Boolean(item.hair_included),
+          hairIncludedNote: item.hair_included_note || "",
+          lengthOptions: Array.isArray(item.length_options) ? item.length_options : ["Mid-Back"],
+          maintenanceLevel: (item.maintenance_level as any) || "Low",
+          recommendedWearTime: item.recommended_wear_time || "6 - 8 Weeks",
+          images: Array.isArray(item.images) && item.images.length > 0 ? item.images : ["/images/logo.png"],
+          featured: Boolean(item.featured),
+          popular: Boolean(item.popular),
+          rating: 5.0,
+          reviewCount: 24,
+          whatsIncluded: [],
+          prepInstructions: [],
+        }));
+
+        return { style: formattedStyle, relatedStyles: related };
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching hairstyle from DB:", err);
+  }
+
+  // Fallback to static data
+  const fallbackStyle = HAIRSTYLES_DATA.find((item) => item.slug === slug) || null;
+  const fallbackRelated = fallbackStyle
+    ? HAIRSTYLES_DATA.filter(
+        (item) => item.id !== fallbackStyle.id && (item.category === fallbackStyle.category || item.featured)
+      ).slice(0, 3)
+    : [];
+
+  return { style: fallbackStyle, relatedStyles: fallbackRelated };
+}
+
 export default async function HairstyleDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
-  const style = HAIRSTYLES_DATA.find((item) => item.slug === resolvedParams.slug);
+  const { style, relatedStyles } = await getHairstyleBySlug(resolvedParams.slug);
 
   if (!style) {
     notFound();
   }
 
-  const relatedStyles = HAIRSTYLES_DATA.filter(
-    (item) => item.id !== style.id && (item.category === style.category || item.featured)
-  ).slice(0, 3);
 
   return (
     <div className="py-10 md:py-16">

@@ -165,21 +165,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-neutral-400">
-          <p className="flex items-center gap-1">
-            © {new Date().getFullYear()} {SALON_INFO.name}. All rights reserved. Crafted with <Heart className="w-3 h-3 text-[#D4AF37] fill-[#D4AF37]" /> in Wollongong, Australia.
+        <div className="pt-8 flex flex-col items-center justify-center gap-2 text-xs text-neutral-400 text-center">
+          <p>
+            © {new Date().getFullYear()} Afriglow. All rights reserved. developed by{" "}
+            <a href="https://www.gstatmobile.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37] transition-colors underline underline-offset-2">
+              gstat mobile solutions
+            </a>
           </p>
-          <div className="flex items-center gap-6">
-            <Link href="/terms" className="hover:text-[#D4AF37] transition-colors">
-              Terms & Conditions
-            </Link>
-            <Link href="/privacy" className="hover:text-[#D4AF37] transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/cancellation-policy" className="hover:text-[#D4AF37] transition-colors">
-              Cancellation Policy
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

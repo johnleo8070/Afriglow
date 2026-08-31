@@ -31,7 +31,7 @@ import {
   Loader2,
   X
 } from "lucide-react";
-import { SALON_INFO } from "@/lib/hairstyles-data";
+import { SALON_INFO, HAIRSTYLE_CATEGORIES } from "@/lib/hairstyles-data";
 import { showToast } from "@/components/Toast";
 
 interface HairstyleRecord {
@@ -105,19 +105,10 @@ export default function AdminDashboard() {
   const [styleForm, setStyleForm] = useState({
     name: "",
     category: "Knotless Braids",
-    shortDescription: "",
+    priceFrom: 200,
+    durationHours: 4,
     description: "",
-    priceFrom: 220,
-    depositAmount: 50,
-    durationHours: 4.5,
-    durationLabel: "Approx. 4 – 5 hours",
-    hairIncluded: false,
-    hairIncludedNote: "Clients can bring 3-4 packs of pre-stretched X-Pression hair.",
-    lengthOptions: "Mid-Back (24\"), Waist Length (30\"), Butt Length (36\")",
-    maintenanceLevel: "Low",
     images: [] as string[],
-    featured: false,
-    popular: false
   });
 
   // Image upload
@@ -128,6 +119,12 @@ export default function AdminDashboard() {
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [updatingProfile, setUpdatingProfile] = useState(false);
+
+  // Deletion & Seeding Action States
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [seedingLoading, setSeedingLoading] = useState(false);
+  const [clearingCatalogue, setClearingCatalogue] = useState(false);
+
 
   // Check auth on mount
   useEffect(() => {
@@ -235,19 +232,10 @@ export default function AdminDashboard() {
     setStyleForm({
       name: "",
       category: "Knotless Braids",
-      shortDescription: "",
+      priceFrom: 200,
+      durationHours: 4,
       description: "",
-      priceFrom: 220,
-      depositAmount: 50,
-      durationHours: 4.5,
-      durationLabel: "Approx. 4 – 5 hours",
-      hairIncluded: false,
-      hairIncludedNote: "Clients can bring 3-4 packs of pre-stretched X-Pression hair.",
-      lengthOptions: "Mid-Back (24\"), Waist Length (30\"), Butt Length (36\")",
-      maintenanceLevel: "Low",
       images: [],
-      featured: false,
-      popular: false
     });
     setIsModalOpen(true);
   };
@@ -256,22 +244,22 @@ export default function AdminDashboard() {
     setEditingStyle(style);
     setStyleForm({
       name: style.name,
-      category: style.category,
-      shortDescription: style.shortDescription,
-      description: style.description,
-      priceFrom: style.priceFrom,
-      depositAmount: style.depositAmount,
-      durationHours: style.durationHours,
-      durationLabel: style.durationLabel,
-      hairIncluded: style.hairIncluded,
-      hairIncludedNote: style.hairIncludedNote,
-      lengthOptions: Array.isArray(style.lengthOptions) ? style.lengthOptions.join(", ") : "",
-      maintenanceLevel: style.maintenanceLevel,
-      images: style.images || [],
-      featured: style.featured,
-      popular: style.popular
+      category: style.category || "Knotless Braids",
+      priceFrom: style.priceFrom || 0,
+      durationHours: style.durationHours || 4,
+      description: style.description || style.shortDescription || "",
+      images: Array.isArray(style.images) ? [...style.images] : [],
     });
     setIsModalOpen(true);
+  };
+
+  // Remove individual uploaded image thumbnail
+  const handleDeleteUploadedImage = (indexToRemove: number) => {
+    setStyleForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, idx) => idx !== indexToRemove),
+    }));
+    showToast("info", "Image removed from selection.");
   };
 
   // Supabase S3 Image Upload Handler
@@ -312,18 +300,26 @@ export default function AdminDashboard() {
   // Save Hairstyle (Create or Update)
   const handleSaveHairstyle = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!styleForm.name || !styleForm.priceFrom) {
-      showToast("error", "Name and Price are required.");
+    if (!styleForm.name.trim() || styleForm.priceFrom === undefined || styleForm.priceFrom === null) {
+      showToast("error", "Hairstyle Name and Price are required.");
       return;
     }
 
     const payload = {
-      ...styleForm,
       id: editingStyle ? editingStyle.id : undefined,
-      lengthOptions: styleForm.lengthOptions
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
+      slug: editingStyle ? editingStyle.slug : undefined,
+      name: styleForm.name.trim(),
+      category: styleForm.category,
+      priceFrom: Number(styleForm.priceFrom),
+      durationHours: Number(styleForm.durationHours) || 4,
+      durationLabel: `Approx. ${styleForm.durationHours || 4} hours`,
+      description: styleForm.description.trim(),
+      shortDescription: styleForm.description.trim().slice(0, 140),
+      images: styleForm.images.length > 0 ? styleForm.images : ["/images/logo.png"],
+      depositAmount: Math.round(Number(styleForm.priceFrom) * 0.25) || 50,
+      lengthOptions: ["Mid-Back (24\")", "Waist Length (30\")", "Butt Length (36\")"],
+      maintenanceLevel: "Low",
+      recommendedWearTime: "6 – 8 Weeks",
     };
 
     try {
@@ -347,19 +343,85 @@ export default function AdminDashboard() {
   };
 
   // Delete Hairstyle
-  const handleDeleteHairstyle = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this hairstyle from the catalogue?")) return;
+  const handleDeleteHairstyle = async (id: string, name?: string) => {
+    const displayName = name ? `"${name}"` : "this hairstyle";
+    if (!confirm(`Are you sure you want to delete ${displayName} from the catalogue?`)) return;
+
+    setDeletingId(id);
+    const previousStyles = [...hairstyles];
+    // Optimistically remove immediately from local state
+    setHairstyles((prev) => prev.filter((item) => item.id !== id && item.slug !== id));
+
     try {
-      const res = await fetch(`/api/hairstyles?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/hairstyles?id=${encodeURIComponent(id)}`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
-        showToast("success", "Hairstyle removed.");
-        fetchDashboardData();
+        showToast("success", `${displayName} removed from catalogue.`);
+      } else {
+        setHairstyles(previousStyles);
+        showToast("error", data.error || "Failed to delete hairstyle.");
       }
     } catch {
+      setHairstyles(previousStyles);
       showToast("error", "Failed to delete hairstyle.");
+    } finally {
+      setDeletingId(null);
     }
   };
+
+  // Clear All Hairstyles from Catalogue
+  const handleClearAllHairstyles = async () => {
+    if (
+      !confirm(
+        "Are you sure you want to remove ALL hairstyles from the catalogue? This will clear all existing styles so you can start completely fresh with your live products."
+      )
+    )
+      return;
+
+    setClearingCatalogue(true);
+    const previousStyles = [...hairstyles];
+    setHairstyles([]);
+
+    try {
+      const res = await fetch("/api/hairstyles?clearAll=true", { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) {
+        showToast("success", "Catalogue cleared. You can now add your live products.");
+      } else {
+        setHairstyles(previousStyles);
+        showToast("error", data.error || "Failed to clear catalogue.");
+      }
+    } catch {
+      setHairstyles(previousStyles);
+      showToast("error", "Error clearing catalogue.");
+    } finally {
+      setClearingCatalogue(false);
+    }
+  };
+
+  // Load / Seed Default Sample Styles into Supabase
+  const handleLoadSampleStyles = async () => {
+    setSeedingLoading(true);
+    try {
+      const res = await fetch("/api/admin/seed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ forceHairstyles: true }),
+      });
+      const data = await res.json();
+      if (data.success || data.message) {
+        showToast("success", "Default Afriglow catalogue styles loaded into database!");
+        fetchDashboardData();
+      } else {
+        showToast("error", data.error || "Failed to load sample styles.");
+      }
+    } catch {
+      showToast("error", "Error loading sample styles.");
+    } finally {
+      setSeedingLoading(false);
+    }
+  };
+
 
   // Update Admin Profile / Password
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -744,93 +806,160 @@ export default function AdminDashboard() {
                   Manage Hairstyle Catalogue in Supabase
                 </h2>
                 <p className="text-neutral-500 text-xs">
-                  Upload images directly to Supabase S3 Storage bucket and update live prices in AUD.
+                  Upload images directly to Supabase S3 Storage bucket, manage live pricing in AUD, and update styles.
                 </p>
               </div>
-              <button
-                onClick={openAddModal}
-                className="btn-gold !py-2.5 !px-5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-md"
-              >
-                <Plus className="w-4 h-4" /> Add New Hairstyle
-              </button>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {hairstyles.map((style) => (
-                <div
-                  key={style.id}
-                  className="p-5 rounded-2xl border border-[#EAE2D5] bg-[#FAF7F2] space-y-4 flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all shadow-sm"
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {hairstyles.length > 0 && (
+                  <button
+                    onClick={handleClearAllHairstyles}
+                    disabled={clearingCatalogue}
+                    className="px-4 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title="Clear all styles to start fresh"
+                  >
+                    {clearingCatalogue ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-3.5 h-3.5" />
+                    )}
+                    Clear All Styles
+                  </button>
+                )}
+
+                <button
+                  onClick={openAddModal}
+                  className="btn-gold !py-2.5 !px-5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-md"
                 >
-                  <div className="space-y-3">
-                    <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden bg-neutral-200">
-                      <Image
-                        src={style.images?.[0] || "/images/logo.png"}
-                        alt={style.name}
-                        fill
-                        className="object-cover"
-                      />
-                      <span className="badge-dark text-[10px] absolute top-2 left-2 backdrop-blur-md">
-                        {style.category}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="font-serif font-bold text-base text-neutral-900">
-                        {style.name}
-                      </h3>
-                      <p className="text-neutral-500 text-xs line-clamp-2 mt-1">
-                        {style.shortDescription || style.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 pt-3 border-t border-[#EAE2D5]">
-                    <div className="flex items-center justify-between text-xs">
-                      <div>
-                        <span className="text-neutral-400 block text-[10px]">Price (AUD)</span>
-                        <strong className="font-serif text-lg text-neutral-900">
-                          ${style.priceFrom}
-                        </strong>
-                      </div>
-                      <div>
-                        <span className="text-neutral-400 block text-[10px]">Deposit</span>
-                        <strong className="text-[#8C6B16]">${style.depositAmount} AUD</strong>
-                      </div>
-                      <div>
-                        <span className="text-neutral-400 block text-[10px]">Duration</span>
-                        <strong className="text-neutral-800">{style.durationHours}h</strong>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2">
-                      <Link
-                        href={`/hairstyles/${style.slug}`}
-                        target="_blank"
-                        className="text-xs text-neutral-500 hover:text-[#8C6B16] font-medium"
-                      >
-                        View Live ↗
-                      </Link>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => openEditModal(style)}
-                          className="p-2 rounded-lg bg-white border border-[#EAE2D5] text-neutral-700 hover:text-[#8C6B16] hover:bg-[#FAF7F2] cursor-pointer"
-                          title="Edit"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteHairstyle(style.id)}
-                          className="p-2 rounded-lg bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 cursor-pointer"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  <Plus className="w-4 h-4" /> Add New Hairstyle
+                </button>
+              </div>
             </div>
+
+            {loadingData ? (
+              <div className="py-16 text-center text-neutral-400 flex items-center justify-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin text-[#D4AF37]" /> Loading Supabase Hairstyle Catalogue...
+              </div>
+            ) : hairstyles.length === 0 ? (
+              <div className="py-16 px-4 text-center rounded-2xl border-2 border-dashed border-[#EAE2D5] bg-[#FAF7F2] space-y-5 max-w-2xl mx-auto">
+                <div className="w-14 h-14 rounded-2xl bg-white border border-[#D4AF37]/40 text-[#8C6B16] flex items-center justify-center mx-auto shadow-sm">
+                  <Scissors className="w-7 h-7" />
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="font-serif text-xl font-bold text-[#14100D]">
+                    Catalogue is Ready for Live Products
+                  </h3>
+                  <p className="text-neutral-500 text-xs sm:text-sm max-w-md mx-auto">
+                    You currently have no hairstyles in the database catalogue. Add your custom live hairstyles, or populate the default Afriglow catalogue styles.
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
+                  <button
+                    onClick={openAddModal}
+                    className="btn-gold !py-2.5 !px-6 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-md"
+                  >
+                    <Plus className="w-4 h-4" /> Add First Hairstyle
+                  </button>
+                  <button
+                    onClick={handleLoadSampleStyles}
+                    disabled={seedingLoading}
+                    className="btn-white !py-2.5 !px-5 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {seedingLoading ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D4AF37]" /> Populating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> Load Default Afriglow Styles
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {hairstyles.map((style) => (
+                  <div
+                    key={style.id}
+                    className="p-5 rounded-2xl border border-[#EAE2D5] bg-[#FAF7F2] space-y-4 flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all shadow-sm"
+                  >
+                    <div className="space-y-3">
+                      <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden bg-neutral-200">
+                        <Image
+                          src={style.images?.[0] || "/images/logo.png"}
+                          alt={style.name}
+                          fill
+                          className="object-cover"
+                        />
+                        <span className="badge-dark text-[10px] absolute top-2 left-2 backdrop-blur-md">
+                          {style.category}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h3 className="font-serif font-bold text-base text-neutral-900">
+                          {style.name}
+                        </h3>
+                        <p className="text-neutral-500 text-xs line-clamp-2 mt-1">
+                          {style.shortDescription || style.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-3 border-t border-[#EAE2D5]">
+                      <div className="flex items-center justify-between text-xs">
+                        <div>
+                          <span className="text-neutral-400 block text-[10px]">Price (AUD)</span>
+                          <strong className="font-serif text-lg text-neutral-900">
+                            ${style.priceFrom}
+                          </strong>
+                        </div>
+                        <div>
+                          <span className="text-neutral-400 block text-[10px]">Deposit</span>
+                          <strong className="text-[#8C6B16]">${style.depositAmount} AUD</strong>
+                        </div>
+                        <div>
+                          <span className="text-neutral-400 block text-[10px]">Duration</span>
+                          <strong className="text-neutral-800">{style.durationHours}h</strong>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2">
+                        <Link
+                          href={`/hairstyles/${style.slug}`}
+                          target="_blank"
+                          className="text-xs text-neutral-500 hover:text-[#8C6B16] font-medium"
+                        >
+                          View Live ↗
+                        </Link>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => openEditModal(style)}
+                            className="p-2 rounded-lg bg-white border border-[#EAE2D5] text-neutral-700 hover:text-[#8C6B16] hover:bg-[#FAF7F2] cursor-pointer"
+                            title="Edit"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteHairstyle(style.id, style.name)}
+                            disabled={deletingId === style.id}
+                            className="p-2 rounded-lg bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 cursor-pointer disabled:opacity-50"
+                            title="Delete"
+                          >
+                            {deletingId === style.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -926,110 +1055,113 @@ export default function AdminDashboard() {
       {/* ---- ADD / EDIT HAIRSTYLE MODAL WITH S3 UPLOAD ---- */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 border border-[#EAE2D5] shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 border border-[#EAE2D5] shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-[#EAE2D5]">
-              <h2 className="font-serif text-2xl font-bold text-[#14100D]">
-                {editingStyle ? "Edit Hairstyle" : "Add New Hairstyle to Supabase"}
-              </h2>
+              <div>
+                <h2 className="font-serif text-2xl font-bold text-[#14100D]">
+                  {editingStyle ? "Edit Hairstyle" : "Add New Hairstyle"}
+                </h2>
+                <p className="text-neutral-500 text-xs mt-0.5">
+                  {editingStyle
+                    ? "Update style details, edit text, or replace uploaded images."
+                    : "Fill in the details below to add a new hairstyle to your live catalogue."}
+                </p>
+              </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 text-neutral-400 hover:text-neutral-800"
+                className="p-2 rounded-xl text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveHairstyle} className="space-y-4 text-xs sm:text-sm">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="font-semibold text-neutral-700">Hairstyle Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={styleForm.name}
-                    onChange={(e) => setStyleForm({ ...styleForm, name: e.target.value })}
-                    placeholder="e.g. Medium Knotless Braids"
-                    className="input-gold"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-neutral-700">Category</label>
-                  <select
-                    value={styleForm.category}
-                    onChange={(e) => setStyleForm({ ...styleForm, category: e.target.value })}
-                    className="input-gold"
-                  >
-                    <option value="Knotless Braids">Knotless Braids</option>
-                    <option value="Box Braids">Box Braids</option>
-                    <option value="Cornrows">Cornrows & Stitch Braids</option>
-                    <option value="Protective Styles">Protective Styles & Twists</option>
-                    <option value="Kids Styles">Kids Styles</option>
-                    <option value="Custom Styles">Custom Styles</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Price & Deposit & Duration */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <label className="font-semibold text-neutral-700">Price (AUD) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={styleForm.priceFrom}
-                    onChange={(e) => setStyleForm({ ...styleForm, priceFrom: parseFloat(e.target.value) || 0 })}
-                    className="input-gold font-mono"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-neutral-700">Deposit (AUD)</label>
-                  <input
-                    type="number"
-                    value={styleForm.depositAmount}
-                    onChange={(e) => setStyleForm({ ...styleForm, depositAmount: parseFloat(e.target.value) || 0 })}
-                    className="input-gold font-mono"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-neutral-700">Duration (Hours)</label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    value={styleForm.durationHours}
-                    onChange={(e) => setStyleForm({ ...styleForm, durationHours: parseFloat(e.target.value) || 0 })}
-                    className="input-gold font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-semibold text-neutral-700">Short Description</label>
+              {/* 1. Hairstyle Name */}
+              <div className="space-y-1.5">
+                <label className="font-semibold text-neutral-800">Hairstyle Name *</label>
                 <input
                   type="text"
-                  value={styleForm.shortDescription}
-                  onChange={(e) => setStyleForm({ ...styleForm, shortDescription: e.target.value })}
-                  placeholder="e.g. Lightweight, versatile and effortlessly beautiful."
-                  className="input-gold"
+                  required
+                  value={styleForm.name}
+                  onChange={(e) => setStyleForm({ ...styleForm, name: e.target.value })}
+                  placeholder="e.g. Medium Knotless Braids"
+                  className="input-gold text-sm"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="font-semibold text-neutral-700">Full Description</label>
+              {/* 2. Category */}
+              <div className="space-y-1.5">
+                <label className="font-semibold text-neutral-800">Category</label>
+                <select
+                  value={styleForm.category}
+                  onChange={(e) => setStyleForm({ ...styleForm, category: e.target.value })}
+                  className="input-gold text-sm"
+                >
+                  {HAIRSTYLE_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* 3. Price (AUD) & 4. Duration (Hours) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="font-semibold text-neutral-800">Price (AUD) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    step="1"
+                    value={styleForm.priceFrom}
+                    onChange={(e) =>
+                      setStyleForm({ ...styleForm, priceFrom: parseFloat(e.target.value) || 0 })
+                    }
+                    placeholder="220"
+                    className="input-gold font-mono text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="font-semibold text-neutral-800">Duration (Hours)</label>
+                  <input
+                    type="number"
+                    min="0.5"
+                    step="0.5"
+                    value={styleForm.durationHours}
+                    onChange={(e) =>
+                      setStyleForm({ ...styleForm, durationHours: parseFloat(e.target.value) || 0 })
+                    }
+                    placeholder="4"
+                    className="input-gold font-mono text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* 5. Description */}
+              <div className="space-y-1.5">
+                <label className="font-semibold text-neutral-800">Description</label>
                 <textarea
                   rows={3}
                   value={styleForm.description}
                   onChange={(e) => setStyleForm({ ...styleForm, description: e.target.value })}
-                  placeholder="Detailed description of the styling technique and care..."
-                  className="input-gold resize-none"
+                  placeholder="Describe the hairstyle, styling technique, and benefits..."
+                  className="input-gold resize-none text-sm"
                 />
               </div>
 
-              {/* S3 Image Upload to Supabase */}
-              <div className="space-y-2 p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE2D5]">
-                <label className="font-semibold text-neutral-900 block flex items-center gap-1.5">
-                  <Upload className="w-4 h-4 text-[#D4AF37]" /> Upload Hairstyle Image to Supabase S3
-                </label>
+              {/* 6. Hairstyle Images with Delete & Upload */}
+              <div className="space-y-3 p-4 rounded-2xl bg-[#FAF7F2] border border-[#EAE2D5]">
+                <div className="flex items-center justify-between">
+                  <label className="font-semibold text-neutral-900 block flex items-center gap-1.5 text-xs sm:text-sm">
+                    <Upload className="w-4 h-4 text-[#D4AF37]" /> Hairstyle Images
+                  </label>
+                  <span className="text-[11px] text-neutral-500">
+                    JPG, PNG, WEBP (Max 10MB)
+                  </span>
+                </div>
+
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -1037,71 +1169,66 @@ export default function AdminDashboard() {
                   onChange={handleImageUpload}
                   className="hidden"
                 />
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadingImage}
-                    className="btn-dark !py-2 !px-4 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
-                  >
-                    {uploadingImage ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading to Supabase...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-3.5 h-3.5 text-[#D4AF37]" /> Choose Image File
-                      </>
-                    )}
-                  </button>
-                  <span className="text-xs text-neutral-500">
-                    JPG, PNG, WEBP (Max 10MB)
-                  </span>
-                </div>
 
-                {/* Preview Uploaded Images */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="btn-dark !py-2.5 !px-4 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer w-full"
+                >
+                  {uploadingImage ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" /> Uploading to Supabase...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 text-[#D4AF37]" /> Click to Upload Image
+                    </>
+                  )}
+                </button>
+
+                {/* Uploaded Images List with Delete Action on Each */}
                 {styleForm.images.length > 0 && (
-                  <div className="flex gap-2 pt-2 overflow-x-auto">
-                    {styleForm.images.map((img, idx) => (
-                      <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-[#D4AF37]">
-                        <Image src={img} alt="Preview" fill className="object-cover" />
-                      </div>
-                    ))}
+                  <div className="space-y-1.5 pt-2">
+                    <span className="text-[11px] font-semibold text-neutral-600 block">
+                      Uploaded Images ({styleForm.images.length}) — Click trash to delete/replace:
+                    </span>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                      {styleForm.images.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className="relative aspect-square rounded-xl overflow-hidden border-2 border-[#D4AF37]/50 group bg-neutral-100 shadow-sm"
+                        >
+                          <Image src={img} alt={`Uploaded ${idx + 1}`} fill className="object-cover" />
+
+                          {/* Delete Image Icon Button */}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteUploadedImage(idx)}
+                            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-md transition-transform hover:scale-110 cursor-pointer"
+                            title="Delete this image"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+
+                          {idx === 0 && (
+                            <span className="absolute bottom-1 left-1 bg-[#14100D]/80 text-[#D4AF37] text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-xs">
+                              Cover
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Length Options & Hair Included */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="font-semibold text-neutral-700">Length Options (comma separated)</label>
-                  <input
-                    type="text"
-                    value={styleForm.lengthOptions}
-                    onChange={(e) => setStyleForm({ ...styleForm, lengthOptions: e.target.value })}
-                    placeholder="Mid-Back (24&quot;), Waist Length (30&quot;)"
-                    className="input-gold"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-neutral-700">Maintenance Level</label>
-                  <select
-                    value={styleForm.maintenanceLevel}
-                    onChange={(e) => setStyleForm({ ...styleForm, maintenanceLevel: e.target.value })}
-                    className="input-gold"
-                  >
-                    <option value="Low">Low Maintenance</option>
-                    <option value="Medium">Medium Maintenance</option>
-                    <option value="High">High Maintenance</option>
-                  </select>
-                </div>
-              </div>
-
+              {/* Modal Actions */}
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#EAE2D5]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="btn-white text-xs font-semibold !py-2.5 !px-5"
+                  className="btn-white text-xs font-semibold !py-2.5 !px-5 cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1109,7 +1236,7 @@ export default function AdminDashboard() {
                   type="submit"
                   className="btn-gold text-xs font-bold !py-2.5 !px-6 cursor-pointer shadow-md"
                 >
-                  {editingStyle ? "Update Hairstyle" : "Save to Database"}
+                  {editingStyle ? "Save Changes" : "Save Hairstyle"}
                 </button>
               </div>
             </form>

@@ -1,8 +1,21 @@
+export type HairstyleCategory =
+  | 'Knotless Braids'
+  | 'Box Braids'
+  | 'Cornrows & Feed-In Styles'
+  | 'Boho & Hybrid Braids'
+  | 'Fulani & Tribal Braids'
+  | 'Twists'
+  | 'Locs & Crochet'
+  | 'Micro Braids & Extended Lengths'
+  | 'Kids Styles'
+  | 'Custom & Specialty Styles'
+  | string;
+
 export interface Hairstyle {
   id: string;
   slug: string;
   name: string;
-  category: 'Knotless Braids' | 'Box Braids' | 'Cornrows' | 'Protective Styles' | 'Kids Styles' | 'Custom Styles';
+  category: HairstyleCategory;
   shortDescription: string;
   description: string;
   priceFrom: number; // in AUD
@@ -328,11 +341,30 @@ export const TIME_SLOTS = [
   '04:00 PM'
 ];
 
+export const HAIRSTYLE_CATEGORIES = [
+  'Knotless Braids',
+  'Box Braids',
+  'Cornrows & Feed-In Styles',
+  'Boho & Hybrid Braids',
+  'Fulani & Tribal Braids',
+  'Twists',
+  'Locs & Crochet',
+  'Micro Braids & Extended Lengths',
+  'Kids Styles',
+  'Custom & Specialty Styles',
+] as const;
+
 export const CATEGORIES_LIST = [
   'All Styles',
   'Knotless Braids',
   'Box Braids',
-  'Cornrows',
-  'Protective Styles',
-  'Kids Styles'
+  'Cornrows & Feed-In Styles',
+  'Boho & Hybrid Braids',
+  'Fulani & Tribal Braids',
+  'Twists',
+  'Locs & Crochet',
+  'Micro Braids & Extended Lengths',
+  'Kids Styles',
+  'Custom & Specialty Styles',
 ];
+
