@@ -268,7 +268,7 @@ export default function HomePage() {
                   className="w-full sm:w-auto glass-card-light text-neutral-200 hover:text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center gap-2 px-8 py-4 rounded-full hover:border-[#D4AF37]/60 transition-all duration-300"
                 >
                   <Scissors className="w-4 h-4 text-[#D4AF37]" />
-                 Read Terms & condition
+                 Read Terms & conditions
                 </Link>
               </div>
 
