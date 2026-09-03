@@ -19,22 +19,22 @@ export default function AboutPage() {
     {
       title: "Creativity",
       desc: "We love creating beautiful styles and helping clients find looks that genuinely suit their personality and lifestyle.",
-      icon: "🎨"
+      icon: Crown
     },
     {
-      title: "Quality",
+      title: "Mastery",
       desc: "We take immense pride in our attention to detail, razor-sharp parting, and durable, long-lasting braiding technique.",
-      icon: "💎"
+      icon: Sparkles
     },
     {
       title: "Care",
       desc: "Your comfort and scalp experience matter deeply to us. We braid with gentle tension and prioritize your natural hair health.",
-      icon: "❤️"
+      icon: Heart
     },
     {
       title: "Confidence",
       desc: "Our ultimate mission is for every client to step out of our chair radiating beauty, poise, and pure confidence.",
-      icon: "✨"
+      icon: ShieldCheck
     }
   ];
 
@@ -44,13 +44,13 @@ export default function AboutPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6">
-            <span className="badge-gold">About Afriglow</span>
+            <span className="badge-gold">About Afrihub</span>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-[#14100D] tracking-tight leading-[1.15]">
               Expert Hair Braiding With <br />
               <span className="text-[#B89223] italic">Care, Creativity & Style</span>
             </h1>
             <p className="text-neutral-700 text-base sm:text-lg leading-relaxed">
-              Afriglow is a Wollongong-based hairstyling business specialising in beautiful braided and protective hairstyles.
+              Afrihub is a Wollongong-based hairstyling business specialising in beautiful braided and protective hairstyles.
             </p>
             <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
               We are passionate about creating hairstyles that make our clients feel confident, beautiful and comfortable. From classic braids to modern protective styles, every appointment is approached with care and attention to detail.
@@ -78,10 +78,11 @@ export default function AboutPage() {
               <div className="relative w-full h-full rounded-2xl overflow-hidden">
                 <Image
                   src="/images/logo.png"
-                  alt="Afriglow Salon Brand"
+                  alt="Afrihub Salon Brand"
                   fill
                   className="object-cover"
                   priority
+                  unoptimized
                 />
               </div>
             </div>
@@ -98,27 +99,30 @@ export default function AboutPage() {
               Our Values
             </h2>
             <p className="text-neutral-600 text-sm sm:text-base">
-              The foundation of every braid, stitch, and smile at Afriglow.
+              The foundation of every braid, stitch, and smile at Afrihub.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((v, i) => (
-              <div
-                key={i}
-                className="p-8 rounded-2xl bg-white border border-[#EAE2D5] shadow-sm hover:shadow-md transition-all space-y-4"
-              >
-                <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-2xl">
-                  {v.icon}
+            {values.map((v, i) => {
+              const IconComp = v.icon;
+              return (
+                <div
+                  key={i}
+                  className="p-8 rounded-2xl bg-white border border-[#EAE2D5] shadow-sm hover:shadow-lg hover:border-[#D4AF37]/50 hover:-translate-y-1 transition-all duration-300 space-y-4 group"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] group-hover:scale-110 transition-transform">
+                    <IconComp className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-serif text-xl font-bold text-[#14100D]">
+                    {v.title}
+                  </h3>
+                  <p className="text-neutral-600 text-xs sm:text-sm leading-relaxed">
+                    {v.desc}
+                  </p>
                 </div>
-                <h3 className="font-serif text-xl font-bold text-[#14100D]">
-                  {v.title}
-                </h3>
-                <p className="text-neutral-600 text-xs sm:text-sm leading-relaxed">
-                  {v.desc}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -130,15 +134,15 @@ export default function AboutPage() {
             <div className="space-y-6">
               <span className="badge-dark text-[#D4AF37]">Convenient Wollongong CBD</span>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">
-                Visit Afriglow Salon
+                Visit Afrihub Salon
               </h2>
               <p className="text-neutral-300 text-sm sm:text-base leading-relaxed">
-                Located right in the heart of Wollongong at <strong>7–9 Corrimal Street</strong>, our salon provides a welcoming, private, and relaxing atmosphere equipped with comfortable seating, entertainment, and refreshments during your braiding sessions.
+                Located right in the heart of Wollongong, our salon provides a welcoming, private, and relaxing atmosphere equipped with comfortable seating, entertainment, and refreshments during your braiding sessions.
               </p>
               <div className="space-y-3 text-sm text-neutral-300">
                 <div className="flex items-center gap-3">
                   <MapPin className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
-                  <span>7–9 Corrimal Street, Wollongong NSW 2500</span>
+                  <span>{SALON_INFO.address}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Phone className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
@@ -159,7 +163,7 @@ export default function AboutPage() {
                 style={{ border: 0 }}
                 allowFullScreen={false}
                 loading="lazy"
-                title="Afriglow Location"
+                title="Afrihub Location"
               />
             </div>
           </div>

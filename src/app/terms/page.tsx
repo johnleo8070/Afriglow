@@ -27,17 +27,17 @@ export default function TermsPage() {
         <div className="p-8 sm:p-12 rounded-3xl bg-white border border-[#EAE2D5] shadow-sm space-y-8 text-sm sm:text-base text-neutral-700 leading-relaxed">
           <div className="p-6 rounded-2xl bg-[#FAF7F2] border-l-4 border-[#D4AF37] space-y-2">
             <p>
-              Welcome to <strong>Afriglow</strong>. These Terms & Conditions govern your use of the Afriglow website and your booking and purchase of hairstyling services through the website.
+              Welcome to <strong>Afrihub</strong>. These Terms & Conditions govern your use of the Afrihub website and your booking and purchase of hairstyling services through the website.
             </p>
             <p className="font-medium text-neutral-900">
-              By using this website or booking an appointment through Afriglow, you agree to these Terms & Conditions.
+              By using this website or booking an appointment through Afrihub, you agree to these Terms & Conditions.
             </p>
           </div>
 
           {/* Section 1 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">1. About Afriglow</h2>
-            <p>Afriglow provides hairstyling and hair-braiding services from:</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">1. About Afrihub</h2>
+            <p>Afrihub provides hairstyling and hair-braiding services from:</p>
             <div className="p-4 rounded-xl bg-[#FAF7F2] text-xs sm:text-sm space-y-1">
               <p><strong>Location:</strong> {SALON_INFO.address}, Australia</p>
               <p><strong>Phone:</strong> {SALON_INFO.phone}</p>
@@ -54,75 +54,95 @@ export default function TermsPage() {
           {/* Section 3 */}
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">3. Hairstyling Services</h2>
-            <p>Afriglow provides hairstyling services as described on the website. Service descriptions, photographs, prices, estimated appointment durations and availability are provided for information and booking purposes.</p>
+            <p>Afrihub provides hairstyling services as described on the website. Service descriptions, photographs, prices, estimated appointment durations and availability are provided for information and booking purposes.</p>
             <p>Hairstyle photographs are examples of the style. The final result may vary depending on factors including hair length, hair texture, density, condition, requested length, colour and other individual characteristics.</p>
           </div>
 
           {/* Section 4 */}
-          <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">4. Prices</h2>
-            <p>Prices displayed on the website are in Australian dollars (AUD), unless otherwise stated. Afriglow reserves the right to update prices and service offerings from time to time. The price applicable to your booking will be displayed before you complete payment. Where additional charges may apply, these will be communicated to you before the additional service is provided.</p>
+          <div className="space-y-3">
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">4. Pricing, Payments & Extra Charges</h2>
+            <p>Prices displayed on the website are in Australian dollars (AUD). To secure an appointment, a <strong>non-refundable deposit of 25% of the chosen hairstyle price</strong> is required. The remaining balance can be paid in-salon or through our payment gateway on our website.</p>
+            
+            <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE2D5] space-y-2 text-xs sm:text-sm">
+              <span className="font-bold text-[#8C6B16] uppercase tracking-wider block">Schedule of Additional Surcharges:</span>
+              <ul className="list-disc pl-5 space-y-1 text-neutral-700">
+                <li><strong>$20:</strong> In-salon detangling and blow-out service (if hair is not pre-detangled and blown out).</li>
+                <li><strong>$30:</strong> Hair shorter than 3 inches (requires extra precision and grip technique).</li>
+                <li><strong>$50:</strong> Extra thick, fine, or hair longer than shoulder length.</li>
+                <li><strong>$20:</strong> Hair extensions brought in on the day of appointment instead of 24 hours prior.</li>
+                <li><strong>$20:</strong> Late arrival fee (applied after the 15-minute grace period).</li>
+                <li><strong>$25 / hour:</strong> After-hours surcharge for afternoon appointments extending past 6:30 PM.</li>
+              </ul>
+            </div>
           </div>
 
           {/* Section 5 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">5. Appointments</h2>
-            <p>Appointments are subject to availability. A booking is considered confirmed once the required booking information has been submitted and any required payment or deposit has been successfully processed. Customers are responsible for providing accurate contact information when making a booking.</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">5. Appointments & Minimum Hair Length</h2>
+            <p>Appointments are subject to availability. To book, select your desired hairstyle and pick a suitable available date from the calendar. If you are unsure of your choice, you are welcome to send a reference photo prior to booking for clarification.</p>
+            <p><strong>Minimum Hair Length:</strong> Your natural hair must be at least <strong>3 inches long</strong> all around for braiding. Hair shorter than 3 inches requires specialized grip and will attract an additional $30 surcharge.</p>
+            <p><strong>Confirmation:</strong> Select your preferred braid colour on the confirmation page. Once completed, an automated confirmation email containing your appointment details and salon address will be sent to your email.</p>
           </div>
 
           {/* Section 6 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">6. Booking Payments</h2>
-            <p>Where Afriglow requires a deposit or booking fee, the amount will be displayed during the booking process. Payment must be successfully completed through the available payment method before the booking is confirmed.</p>
-            <p>Payment information is processed by a third-party payment provider (such as Stripe). Afriglow does not store complete payment card numbers on its own servers.</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">6. Providing Hair Extensions</h2>
+            <p>Extensions are included for most braiding styles. However, if you prefer to supply your own hair:</p>
+            <ul className="list-disc pl-6 space-y-1 text-sm text-neutral-700">
+              <li><strong>Pre-stretched extensions</strong> are strictly preferred.</li>
+              <li>Your extensions must be dropped off at the salon at least <strong>24 hours prior</strong> to your appointment for pre-feathering and preparation. Bringing extensions on the appointment day will incur a $20 prep fee.</li>
+              <li>Your hairstyle choice and extension colour <strong>cannot be changed on the day of your appointment</strong>, as extensions are prepped and customized prior to your arrival.</li>
+            </ul>
           </div>
 
           {/* Section 7 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">7. Cancellations and Rescheduling</h2>
-            <p>Customers should contact Afriglow as soon as possible if they need to cancel or reschedule an appointment. Afriglow&apos;s current cancellation and rescheduling requirements are set out in the <Link href="/cancellation-policy" className="text-[#8C6B16] font-semibold underline">Cancellation Policy</Link> published on the website. Any cancellation fees, forfeiture of deposits or other booking consequences will be applied subject to applicable Australian Consumer Law.</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">7. Hair Preparation & Hygiene Standard</h2>
+            <p>Clients must arrive with natural hair thoroughly washed, clean, detangled, and blown out straight from root to tip. Please ensure hair is free from heavy butters or heavy oils (light leave-in conditioner or heat protectant is acceptable).</p>
+            <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-medium">
+              ⚠️ <strong>Hygiene Notice:</strong> For the health and comfort of our stylists and other guests, you will be refused service if you arrive with dirty, unwashed hair.
+            </div>
           </div>
 
           {/* Section 8 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">8. Late Arrivals</h2>
-            <p>Customers are encouraged to arrive on time for their appointment. If a customer arrives late, Afriglow may need to shorten, modify or reschedule the appointment depending on the circumstances and availability.</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">8. Salon Etiquette & Guest Policy</h2>
+            <p>To preserve a calm, focused, and relaxing studio environment:</p>
+            <ul className="list-disc pl-6 space-y-1 text-sm text-neutral-700">
+              <li><strong>Guest Limit:</strong> Only <strong>one (1) guest</strong> is permitted to accompany you during your appointment.</li>
+              <li><strong>Refreshments:</strong> You are warmly welcome to bring your own food, snacks, or drinks.</li>
+              <li><strong>Urgent Enquiries:</strong> If you have an urgent inquiry regarding an active booking, please <strong>call rather than messaging</strong>.</li>
+            </ul>
           </div>
 
           {/* Section 9 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">9. No-Shows</h2>
-            <p>If a customer does not attend a scheduled appointment and does not contact Afriglow, the booking may be treated as a no-show. Any consequences for no-shows will be subject to the applicable cancellation policy and Australian Consumer Law.</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">9. Cancellations, Rescheduling & Late Arrivals</h2>
+            <p>All cancellations and rescheduling are governed by our dedicated <Link href="/cancellation-policy" className="text-[#8C6B16] font-semibold underline">Cancellation & Rescheduling Policy</Link>:</p>
+            <ul className="list-disc pl-6 space-y-1 text-sm text-neutral-700">
+              <li>Rescheduling is allowed <strong>one time</strong> on the same deposit if requested at least <strong>72 hours</strong> in advance.</li>
+              <li>Rescheduling with less than <strong>48 hours&apos; notice</strong> incurs a <strong>$30 fee</strong>.</li>
+              <li>Cancellations or no-shows forfeit the initialdeposit made .</li>
+              <li>A 15-minute grace period applies; arrivals past 15 minutes incur a <strong>$20 late fee</strong>. Appointments are cancelled after 1 hour of delay.</li>
+            </ul>
           </div>
 
           {/* Section 10 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">10. Hair Preparation</h2>
-            <p>Customers should follow any preparation instructions provided for their selected hairstyle. Where required, customers may be asked to arrive with clean, dry and detangled hair. If a customer&apos;s hair condition, length or other characteristic makes the selected hairstyle unsuitable, Afriglow may discuss an alternative style with the customer.</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">10. Client Satisfaction & Adjustment Period</h2>
+            <p>Your satisfaction is our utmost priority. If you feel any tension or wish to modify an element of your look, please speak up during your appointment or contact us within <strong>24 hours after your service is completed</strong> so that we can make the necessary adjustments.</p>
           </div>
 
           {/* Section 11 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">11. Allergies and Sensitivities</h2>
-            <p>Customers should inform Afriglow before their appointment of any known allergies, sensitivities or relevant concerns relating to hair products, extensions or styling materials. Afriglow should be informed of any relevant concern before the service begins.</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">11. Hairstyle Maintenance & In-Store Bonnets</h2>
+            <p>To maximize the longevity and scalp health of your braids, keep your hair regularly moisturised and wrap your hair with a satin scarf or bonnet every night before bedtime. Premium satin bonnets and protective sleepwear are available for purchase in-store.</p>
           </div>
 
           {/* Section 12 */}
           <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">12. Results and Individual Hair Characteristics</h2>
-            <p>Afriglow takes reasonable care when providing hairstyling services. However, individual results can vary depending on hair type, texture, length, density, condition, previous treatments and other factors. Afriglow does not guarantee that every hairstyle will look exactly like a reference photograph.</p>
-          </div>
-
-          {/* Section 13 */}
-          <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">13. Consumer Guarantees</h2>
-            <p>Nothing in these Terms & Conditions excludes, restricts or modifies any rights or remedies that cannot lawfully be excluded under Australian Consumer Law or other applicable legislation. Where a service does not meet applicable consumer guarantees, customers may have rights to an appropriate remedy, depending on the circumstances.</p>
-          </div>
-
-          {/* Section 14 */}
-          <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-[#14100D]">14. Refunds and Remedies</h2>
-            <p>Refunds, cancellations and other remedies will be handled in accordance with applicable Australian Consumer Law and Afriglow&apos;s applicable policies. Where a refund is legally required, Afriglow will provide the applicable remedy in accordance with the law.</p>
+            <h2 className="font-serif text-xl font-bold text-[#14100D]">12. Australian Consumer Law Guarantees</h2>
+            <p>Nothing in these Terms & Conditions excludes, restricts or modifies any consumer rights or statutory guarantees provided under the <em>Competition and Consumer Act 2010 (Cth)</em> and Australian Consumer Law. In New South Wales, statutory consumer guarantees apply to beauty and personal care services, and appropriate remedies remain available in circumstances where a service fails to meet legal consumer guarantees.</p>
           </div>
 
           {/* Section 15 */}
@@ -134,31 +154,31 @@ export default function TermsPage() {
           {/* Section 16 */}
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">16. Website Content</h2>
-            <p>Afriglow makes reasonable efforts to ensure that information on the website is accurate and current. However, information may occasionally contain errors or outdated information. Afriglow may update, modify or remove website content at any time.</p>
+            <p>Afrihub makes reasonable efforts to ensure that information on the website is accurate and current. However, information may occasionally contain errors or outdated information. Afrihub may update, modify or remove website content at any time.</p>
           </div>
 
           {/* Section 17 */}
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">17. Intellectual Property</h2>
-            <p>Unless otherwise stated, the content of this website, including photographs, text, branding, logos, graphics and design elements, belongs to or is licensed to Afriglow. You must not reproduce, copy, modify, distribute or commercially use website content without permission.</p>
+            <p>Unless otherwise stated, the content of this website, including photographs, text, branding, logos, graphics and design elements, belongs to or is licensed to Afrihub. You must not reproduce, copy, modify, distribute or commercially use website content without permission.</p>
           </div>
 
           {/* Section 18 */}
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">18. Customer Photos and Marketing</h2>
-            <p>Afriglow will not assume that permission has been granted to use a customer&apos;s photograph for marketing purposes merely because the photograph was taken during an appointment. Where Afriglow wishes to use identifiable customer photographs for promotional purposes, appropriate permission will be obtained.</p>
+            <p>Afrihub will not assume that permission has been granted to use a customer&apos;s photograph for marketing purposes merely because the photograph was taken during an appointment. Where Afrihub wishes to use identifiable customer photographs for promotional purposes, appropriate permission will be obtained.</p>
           </div>
 
           {/* Section 19 */}
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">19. Privacy</h2>
-            <p>Afriglow may collect personal information required to process bookings, communicate with customers, provide services and manage the business. Please refer to the <Link href="/privacy" className="text-[#8C6B16] font-semibold underline">Privacy Policy</Link> for details.</p>
+            <p>Afrihub may collect personal information required to process bookings, communicate with customers, provide services and manage the business. Please refer to the <Link href="/privacy" className="text-[#8C6B16] font-semibold underline">Privacy Policy</Link> for details.</p>
           </div>
 
           {/* Section 20 */}
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">20. Changes to These Terms</h2>
-            <p>Afriglow may update these Terms & Conditions from time to time. The updated version will be published on the website with an updated date.</p>
+            <p>Afrihub may update these Terms & Conditions from time to time. The updated version will be published on the website with an updated date.</p>
           </div>
 
           {/* Section 21 */}
@@ -170,7 +190,7 @@ export default function TermsPage() {
           {/* Section 22 */}
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">22. Contact</h2>
-            <p>If you have questions about these Terms & Conditions, please contact Afriglow at {SALON_INFO.address}, Wollongong NSW 2500 | {SALON_INFO.phone} | {SALON_INFO.email}.</p>
+            <p>If you have questions about these Terms & Conditions, please contact Afrihub at {SALON_INFO.address}, Wollongong NSW 2500 | {SALON_INFO.phone} | {SALON_INFO.email}.</p>
           </div>
         </div>
       </section>

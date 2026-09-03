@@ -41,7 +41,7 @@ export default function ContactPage() {
     } catch {
       // Fallback success for graceful UX
       setSubmitted(true);
-      showToast("success", "Thank you! Your message has been sent to Afriglow.");
+      showToast("success", "Thank you! Your message has been sent to Afrihub.");
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ export default function ContactPage() {
           <div className="lg:col-span-5 space-y-8">
             <div className="p-8 rounded-3xl bg-[#14100D] text-[#FAF7F2] border border-[#D4AF37]/30 space-y-6">
               <h2 className="font-serif text-2xl font-bold text-white">
-                Afriglow Hair Styling
+                Afrihub Hair Styling
               </h2>
               <p className="text-neutral-300 text-sm leading-relaxed">
                 Expert hair braiding with care, creativity and style in Wollongong NSW.
@@ -132,7 +132,7 @@ export default function ContactPage() {
                     Message Received!
                   </h3>
                   <p className="text-neutral-600 text-sm max-w-md mx-auto">
-                    Thank you for contacting Afriglow. Rose will review your message and get back to you shortly.
+                    Thank you for contacting Afrihub. Rose will review your message and get back to you shortly.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
@@ -246,7 +246,7 @@ export default function ContactPage() {
             allowFullScreen={false}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="Afriglow Salon Map"
+            title="Afrihub Salon Map"
             className="w-full h-full"
           />
         </div>

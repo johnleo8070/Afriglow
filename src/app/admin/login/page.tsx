@@ -44,12 +44,12 @@ export default function AdminLoginPage() {
         <div className="text-center mb-8 flex flex-col items-center">
           <Image 
             src="/images/logo.png" 
-            alt="Kakadon Logo" 
+            alt="Afrihub Logo" 
             width={180} 
             height={60} 
             className="object-contain mb-2"
           />
-          <p className="text-sm text-gray-500">Admin Dashboard</p>
+          <p className="text-sm text-gray-500">Afrihub Admin Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

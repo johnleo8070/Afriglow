@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @theme {
   --color-gold-50: #FCFAF0;
@@ -32,86 +32,150 @@
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-    color: #27211C;
-    background-color: #FCFAF6;
-  }
-  body {
-    font-family: var(--font-sans), sans-serif;
-    color: #27211C;
-    background-color: #FCFAF6;
-    overflow-x: hidden;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-serif), Georgia, serif;
-    letter-spacing: -0.01em;
-  }
+  html { scroll-behavior: smooth; color: #27211C; background-color: #FCFAF6; }
+  body { font-family: var(--font-sans), sans-serif; color: #27211C; background-color: #FCFAF6; overflow-x: hidden; }
+  h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif), Georgia, serif; letter-spacing: -0.01em; }
 }
 
 @layer components {
-  /* Luxury Gold Buttons */
   .btn-gold {
-    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-neutral-900 bg-gradient-to-r from-[#D4AF37] via-[#F3DE8A] to-[#D4AF37] bg-[length:200%_auto] px-7 py-3.5 rounded-full shadow-[0_4px_20px_rgba(212,175,55,0.35)] hover:shadow-[0_6px_25px_rgba(212,175,55,0.55)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer;
+    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-neutral-900
+      bg-gradient-to-r from-[#D4AF37] via-[#F3DE8A] to-[#D4AF37] bg-[length:200%_auto]
+      px-7 py-3.5 rounded-full shadow-[0_4px_20px_rgba(212,175,55,0.35)]
+      hover:shadow-[0_6px_25px_rgba(212,175,55,0.55)] hover:scale-[1.02] active:scale-[0.98]
+      transition-all duration-300 cursor-pointer;
   }
   .btn-dark {
-    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-[#FBF7EE] bg-[#1A1512] hover:bg-[#2A231E] border border-[#D4AF37]/30 hover:border-[#D4AF37] px-7 py-3.5 rounded-full shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer;
+    @apply relative inline-flex items-center justify-center font-medium tracking-wide
+      text-[#FBF7EE] bg-[#1A1512] hover:bg-[#2A231E] border border-[#D4AF37]/30 hover:border-[#D4AF37]
+      px-7 py-3.5 rounded-full shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]
+      transition-all duration-300 cursor-pointer;
   }
   .btn-outline-gold {
-    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-[#937118] hover:text-[#120F0D] bg-transparent hover:bg-[#D4AF37] border-2 border-[#D4AF37] px-7 py-3.5 rounded-full hover:shadow-[0_4px_20px_rgba(212,175,55,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer;
+    @apply relative inline-flex items-center justify-center font-medium tracking-wide
+      text-[#937118] hover:text-[#120F0D] bg-transparent hover:bg-[#D4AF37]
+      border-2 border-[#D4AF37] px-7 py-3.5 rounded-full
+      hover:shadow-[0_4px_20px_rgba(212,175,55,0.35)] hover:scale-[1.02] active:scale-[0.98]
+      transition-all duration-300 cursor-pointer;
   }
   .btn-white {
-    @apply relative inline-flex items-center justify-center font-medium tracking-wide text-[#1A1512] bg-white hover:bg-[#FAF7F2] border border-[#EFE7DA] px-6 py-3 rounded-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer;
+    @apply relative inline-flex items-center justify-center font-medium tracking-wide
+      text-[#1A1512] bg-white hover:bg-[#FAF7F2] border border-[#EFE7DA]
+      px-6 py-3 rounded-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]
+      transition-all duration-300 cursor-pointer;
   }
 
-  /* Cards */
   .card-luxury {
-    @apply bg-white rounded-2xl border border-[#EFE7DA] shadow-[0_4px_24px_rgba(39,33,28,0.04)] hover:shadow-[0_12px_36px_rgba(212,175,55,0.15)] hover:border-[#D4AF37]/40 transition-all duration-300 overflow-hidden;
+    @apply bg-white rounded-2xl border border-[#EFE7DA]
+      shadow-[0_4px_24px_rgba(39,33,28,0.04)]
+      hover:shadow-[0_12px_36px_rgba(212,175,55,0.15)] hover:border-[#D4AF37]/40
+      transition-all duration-300 overflow-hidden;
   }
   .card-dark {
-    @apply bg-[#1C1714] text-[#FAF7F2] rounded-2xl border border-[#D4AF37]/20 shadow-[0_4px_24px_rgba(0,0,0,0.3)] hover:border-[#D4AF37]/50 transition-all duration-300 overflow-hidden;
+    @apply bg-[#1C1714] text-[#FAF7F2] rounded-2xl border border-[#D4AF37]/20
+      shadow-[0_4px_24px_rgba(0,0,0,0.3)] hover:border-[#D4AF37]/50
+      transition-all duration-300 overflow-hidden;
   }
 
-  /* Badges */
+  .glass-card {
+    background: rgba(20, 16, 13, 0.65);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.12);
+  }
+  .glass-card-light {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
   .badge-gold {
-    @apply inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#FAF3E0] text-[#8C6B16] border border-[#D4AF37]/40;
+    @apply inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full
+      text-xs font-semibold uppercase tracking-wider bg-[#FAF3E0] text-[#8C6B16] border border-[#D4AF37]/40;
   }
   .badge-dark {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider bg-[#2B231D] text-[#D4AF37] border border-[#D4AF37]/30;
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+      text-xs font-semibold tracking-wider bg-[#2B231D] text-[#D4AF37] border border-[#D4AF37]/30;
   }
 
-  /* Form Inputs */
   .input-gold {
-    @apply w-full px-4 py-3.5 bg-white border border-[#E2D9CB] rounded-xl text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all;
+    @apply w-full px-4 py-3.5 bg-white border border-[#E2D9CB] rounded-xl
+      text-neutral-800 placeholder-neutral-400
+      focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent transition-all;
   }
 }
 
-/* Metallic Text & Glows */
+/* === KEYFRAMES =========================================== */
+@keyframes fadeInUp    { from { opacity:0; transform:translateY(30px); }  to { opacity:1; transform:translateY(0); } }
+@keyframes fadeInLeft  { from { opacity:0; transform:translateX(-36px); } to { opacity:1; transform:translateX(0); } }
+@keyframes fadeInRight { from { opacity:0; transform:translateX(36px); }  to { opacity:1; transform:translateX(0); } }
+@keyframes fadeIn      { from { opacity:0; } to { opacity:1; } }
+@keyframes floatY      { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
+@keyframes floatSlow   { 0%,100% { transform:translateY(0) rotate(0deg); } 33% { transform:translateY(-16px) rotate(1.5deg); } 66% { transform:translateY(-6px) rotate(-1deg); } }
+@keyframes shimmerSlide { 0% { background-position:-200% center; } 100% { background-position:200% center; } }
+@keyframes orbPulse    { 0%,100% { opacity:0.14; transform:scale(1); } 50% { opacity:0.28; transform:scale(1.1); } }
+@keyframes glowPulse   { 0%,100% { opacity:0.12; } 50% { opacity:0.30; } }
+@keyframes badgePop    { 0% { opacity:0; transform:scale(0.65) translateY(10px); } 70% { transform:scale(1.06); } 100% { opacity:1; transform:scale(1) translateY(0); } }
+@keyframes scaleIn     { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+@keyframes slideInCard { from { opacity:0; transform:translateY(16px) scale(0.96); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes spin-slow   { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+
+/* === ANIMATION UTILITIES ================================= */
+.animate-fade-in-up    { animation: fadeInUp    0.75s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-fade-in-left  { animation: fadeInLeft  0.75s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-fade-in-right { animation: fadeInRight 0.75s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-fade-in       { animation: fadeIn      0.8s ease both; }
+.animate-scale-in      { animation: scaleIn     0.75s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-slide-in-card { animation: slideInCard 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-float         { animation: floatY      4s ease-in-out infinite; }
+.animate-float-slow    { animation: floatSlow   7s ease-in-out infinite; }
+.animate-orb-pulse     { animation: orbPulse    4s ease-in-out infinite; }
+.animate-glow-pulse    { animation: glowPulse   3.5s ease-in-out infinite; }
+.animate-badge-pop     { animation: badgePop    0.65s cubic-bezier(0.34,1.56,0.64,1) both; }
+.animate-spin-slow     { animation: spin-slow   12s linear infinite; }
+
+/* Stagger delays */
+.delay-75  { animation-delay:0.075s; }
+.delay-100 { animation-delay:0.10s; }
+.delay-150 { animation-delay:0.15s; }
+.delay-200 { animation-delay:0.20s; }
+.delay-300 { animation-delay:0.30s; }
+.delay-400 { animation-delay:0.40s; }
+.delay-500 { animation-delay:0.50s; }
+.delay-600 { animation-delay:0.60s; }
+.delay-700 { animation-delay:0.70s; }
+.delay-800 { animation-delay:0.80s; }
+.delay-900 { animation-delay:0.90s; }
+.delay-1000{ animation-delay:1.00s; }
+.delay-1200{ animation-delay:1.20s; }
+.delay-1400{ animation-delay:1.40s; }
+
+/* === TEXT EFFECTS ======================================== */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #A87919 0%, #D4AF37 45%, #F6E294 70%, #C49B2C 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: linear-gradient(135deg, #A87919 0%, #D4AF37 40%, #F6E294 65%, #C49B2C 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.text-gold-shimmer {
+  background: linear-gradient(90deg, #8C6B16 0%, #F6E294 35%, #D4AF37 55%, #A87919 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  animation: shimmerSlide 4s linear infinite;
+}
+.text-rose-gold-gradient {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F6C8D0 30%, #EAA2B0 60%, #F5D3BB 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
-.gold-glow {
-  box-shadow: 0 0 35px rgba(212, 175, 55, 0.25);
-}
+/* === MISC ================================================ */
+.btn-shine { background:linear-gradient(135deg,#CC4A64 0%,#DB5E7A 45%,#B93E56 100%); box-shadow:0 6px 24px rgba(204,74,100,.45),inset 0 1px 1px rgba(255,255,255,.4); transition:all .3s cubic-bezier(.16,1,.3,1); }
+.btn-shine:hover { background:linear-gradient(135deg,#DA5671 0%,#E86B86 45%,#C74760 100%); box-shadow:0 10px 32px rgba(204,74,100,.65),inset 0 1px 1px rgba(255,255,255,.6); transform:translateY(-2px) scale(1.02); }
+.gold-glow { box-shadow:0 0 35px rgba(212,175,55,.25); }
+.gold-ring  { box-shadow:0 0 0 2px #D4AF37,0 0 15px rgba(212,175,55,.4); }
 
-.gold-ring {
-  box-shadow: 0 0 0 2px #D4AF37, 0 0 15px rgba(212, 175, 55, 0.4);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #FAF7F2;
-}
-::-webkit-scrollbar-thumb {
-  background: #D4AF37;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #B89223;
-}
+::-webkit-scrollbar       { width:6px; }
+::-webkit-scrollbar-track { background:#FAF7F2; }
+::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#D4AF37,#B89223); border-radius:4px; }
+::-webkit-scrollbar-thumb:hover { background:#A87919; }

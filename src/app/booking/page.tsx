@@ -300,7 +300,7 @@ function BookingEngine() {
 
     // Save to local storage for confirmation view
     try {
-      localStorage.setItem("afriglow_latest_booking", JSON.stringify(bookingPayload));
+      localStorage.setItem("afrihub_latest_booking", JSON.stringify(bookingPayload));
     } catch {}
 
     showToast(
@@ -322,7 +322,7 @@ function BookingEngine() {
             Book Your Appointment
           </h1>
           <p className="text-neutral-600 text-sm sm:text-base">
-            Select your style, date & time slot at Afriglow in Wollongong NSW.
+            Select your style, date & time slot at Afrihub in Wollongong NSW.
           </p>
         </div>
 
@@ -542,7 +542,7 @@ function BookingEngine() {
                     Step 2 — Choose Appointment Date
                   </h2>
                   <p className="text-neutral-500 text-xs sm:text-sm">
-                    Select a date for your visit at 7–9 Corrimal Street, Wollongong.
+                    Select a date for your visit at our Wollongong salon.
                   </p>
                 </div>
 

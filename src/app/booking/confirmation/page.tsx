@@ -39,7 +39,7 @@ function ConfirmationContent() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("afriglow_latest_booking");
+      const stored = localStorage.getItem("afrihub_latest_booking");
       if (stored) {
         setBooking(JSON.parse(stored));
       } else {
@@ -80,10 +80,10 @@ function ConfirmationContent() {
     if (!booking) return;
     const icsData = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Afriglow Hair Styling//EN
+PRODID:-//Afrihub Hair Styling//EN
 BEGIN:VEVENT
-SUMMARY:Afriglow Appointment - ${booking.hairstyleName}
-DESCRIPTION:Your hair braiding session with Afriglow at 7-9 Corrimal St, Wollongong NSW 2500. Booking Ref: ${booking.bookingNumber}. Please arrive washed and detangled.
+SUMMARY:Afrihub Appointment - ${booking.hairstyleName}
+DESCRIPTION:Your hair braiding session with Afrihub at 7-9 Corrimal St, Wollongong NSW 2500. Booking Ref: ${booking.bookingNumber}. Please arrive washed and detangled.
 LOCATION:${SALON_INFO.address}
 STATUS:CONFIRMED
 END:VEVENT
@@ -92,7 +92,7 @@ END:VCALENDAR`;
     const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
     const link = document.createElement("a");
     link.href = window.URL.createObjectURL(blob);
-    link.setAttribute("download", `Afriglow-Appointment-${booking.bookingNumber}.ics`);
+    link.setAttribute("download", `Afrihub-Appointment-${booking.bookingNumber}.ics`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -115,7 +115,7 @@ END:VCALENDAR`;
             Your Appointment Is Confirmed! 🎉
           </h1>
           <p className="text-neutral-600 text-base sm:text-lg max-w-xl mx-auto">
-            Thank you for booking with Afriglow. We look forward to creating your beautiful braided style.
+            Thank you for booking with Afrihub. We look forward to creating your beautiful braided style.
           </p>
         </div>
 
@@ -130,62 +130,9 @@ END:VCALENDAR`;
                 {booking.bookingNumber}
               </span>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={handleDownloadIcs}
-                className="btn-white text-xs font-semibold !py-2.5 !px-4 flex items-center gap-1.5"
-              >
-                <Download className="w-3.5 h-3.5 text-[#D4AF37]" /> Add to Calendar
-              </button>
-            </div>
-          </div>
-
-          {/* Details Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] space-y-1">
-              <span className="text-xs text-neutral-500 font-medium flex items-center gap-1">
-                <Scissors className="w-3.5 h-3.5 text-[#D4AF37]" /> Hairstyle Selected
-              </span>
-              <strong className="text-base text-neutral-900 block font-serif">
-                {booking.hairstyleName}
-              </strong>
-              <span className="text-xs text-neutral-500">{booking.selectedLength}</span>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] space-y-1">
-              <span className="text-xs text-neutral-500 font-medium flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" /> Date & Time
-              </span>
-              <strong className="text-base text-neutral-900 block">
-                {booking.appointmentDate}
-              </strong>
-              <span className="text-xs text-neutral-500 font-medium">{booking.appointmentTime}</span>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-[#FAF7F2] space-y-1 sm:col-span-2">
-              <span className="text-xs text-neutral-500 font-medium flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" /> Salon Location
-              </span>
-              <strong className="text-sm text-neutral-900 block">
-                {SALON_INFO.address}
-              </strong>
-              <span className="text-xs text-neutral-500">Wollongong CBD (Free street parking & nearby transit)</span>
-            </div>
-          </div>
-
-          {/* Payment & Balance */}
-          <div className="p-6 rounded-2xl bg-[#FAF6EE] border border-[#EAE2D5] space-y-3 text-sm">
-            <div className="flex justify-between text-neutral-700">
-              <span>Total Service Amount:</span>
-              <span className="font-semibold text-neutral-900">${booking.totalPrice} AUD</span>
-            </div>
-            <div className="flex justify-between text-emerald-700 font-semibold">
-              <span>Deposit / Booking Fee Paid:</span>
-              <span>${booking.depositPaid} AUD (Paid Online)</span>
-            </div>
-            <div className="flex justify-between text-neutral-900 font-bold pt-2 border-t border-[#EAE2D5]">
-              <span>Remaining Balance Due at Salon:</span>
-              <span className="text-[#8C6B16]">${booking.balanceDue} AUD</span>
+            <div className="text-right">
+              <span className="text-xs text-neutral-500 block">Remaining Balance</span>
+              <span className="font-bold text-[#8C6B16]">${booking.balanceDue} AUD</span>
             </div>
           </div>
 
@@ -233,7 +180,7 @@ END:VCALENDAR`;
               href="/contact"
               className="btn-gold !py-3 !px-6 text-xs font-semibold w-full sm:w-auto text-center flex items-center justify-center gap-2"
             >
-              <Phone className="w-3.5 h-3.5" /> Contact Afriglow
+              <Phone className="w-3.5 h-3.5" /> Contact Afrihub
             </Link>
           </div>
         </div>

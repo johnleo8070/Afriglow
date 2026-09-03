@@ -58,6 +58,10 @@ function HairstylesCatalogContent() {
       if (sortBy === "price-high") return b.priceFrom - a.priceFrom;
       if (sortBy === "duration") return a.durationHours - b.durationHours;
       if (sortBy === "rating") return b.rating - a.rating;
+      // Default recommended: women's styles always shown before Men Hair styles
+      const aIsMen = a.category === "Men Hair styles" ? 1 : 0;
+      const bIsMen = b.category === "Men Hair styles" ? 1 : 0;
+      if (aIsMen !== bIsMen) return aIsMen - bIsMen;
       return (b.popular ? 1 : 0) - (a.popular ? 1 : 0);
     });
   }, [hairstylesList, selectedCategory, searchQuery, maintenanceFilter, sortBy]);

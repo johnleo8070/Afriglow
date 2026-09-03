@@ -8,6 +8,6 @@ export default function MainWrapper({ children }: { children: ReactNode }) {
   const isAdmin = pathname?.startsWith("/admin");
 
   return (
-    <main className={isAdmin ? "flex-1" : "flex-1 pt-24 md:pt-28"}>{children}</main>
+    <main className={isAdmin ? "flex-1" : "flex-1 pt-20"}>{children}</main>
   );
 }

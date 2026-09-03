@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -20,7 +20,60 @@ import {
 import { SALON_INFO, type Hairstyle } from "@/lib/hairstyles-data";
 import HairstyleCard from "@/components/HairstyleCard";
 
+// Live salon categories with authentic Supabase images from the live hairstyles database
+const DEFAULT_CATEGORIES = [
+  {
+    name: "Knotless Braids",
+    count: "5 Styles",
+    desc: "Tension-free feed-in, seamless natural finish",
+    image: "https://plfymauqmaygbwaqsgdw.supabase.co/storage/v1/object/public/hairstyles/hairstyles/1788298942666-5t8f4k.jpeg"
+  },
+  {
+    name: "Cornrows & Feed-In Styles",
+    count: "8 Styles",
+    desc: "Precision stitch lines & sleek scalp designs",
+    image: "https://plfymauqmaygbwaqsgdw.supabase.co/storage/v1/object/public/hairstyles/hairstyles/1788182396167-tiss2g.jpeg"
+  },
+  {
+    name: "Box Braids",
+    count: "7 Styles",
+    desc: "Classic square & triangle parts, durable hold",
+    image: "https://plfymauqmaygbwaqsgdw.supabase.co/storage/v1/object/public/hairstyles/hairstyles/1788298887841-z56j7j.jpeg"
+  },
+  {
+    name: "Fulani & Tribal Braids",
+    count: "6 Styles",
+    desc: "Intricate cultural patterns with curls & beads",
+    image: "https://plfymauqmaygbwaqsgdw.supabase.co/storage/v1/object/public/hairstyles/hairstyles/1788175832253-4iwnzu.jpg"
+  },
+  {
+    name: "Twists",
+    count: "4 Styles",
+    desc: "Bouncy passion twists & Senegalese rope twists",
+    image: "https://plfymauqmaygbwaqsgdw.supabase.co/storage/v1/object/public/hairstyles/hairstyles/1788177120778-rcqqug.webp"
+  },
+  {
+    name: "Locs & Crochet",
+    count: "3 Styles",
+    desc: "Distressed butterfly locs & crochet installs",
+    image: "https://plfymauqmaygbwaqsgdw.supabase.co/storage/v1/object/public/hairstyles/hairstyles/1788182550814-307rkf.jpg"
+  },
+  {
+    name: "Micro Braids & Extended Lengths",
+    count: "3 Styles",
+    desc: "Ultra-fine single braids & waist-length elegance",
+    image: "https://plfymauqmaygbwaqsgdw.supabase.co/storage/v1/object/public/hairstyles/hairstyles/1788299273125-xh38ey.jpeg"
+  },
+  {
+    name: "Custom & Specialty Styles",
+    count: "2 Styles",
+    desc: "Bespoke formal, bridal & ombre creations",
+    image: "https://plfymauqmaygbwaqsgdw.supabase.co/storage/v1/object/public/hairstyles/hairstyles/1788183314004-07zak8.jpg"
+  }
+];
+
 export default function HomePage() {
+  const [allStyles, setAllStyles] = useState<Hairstyle[]>([]);
   const [featuredStyles, setFeaturedStyles] = useState<Hairstyle[]>([]);
   const [loadingStyles, setLoadingStyles] = useState<boolean>(true);
 
@@ -29,6 +82,7 @@ export default function HomePage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
+          setAllStyles(data.data);
           setFeaturedStyles(data.data.slice(0, 6));
         }
       })
@@ -40,12 +94,81 @@ export default function HomePage() {
       });
   }, []);
 
+  // Compute live categories directly from active hairstyles in the database
+  const liveCategories = useMemo(() => {
+    if (!allStyles || allStyles.length === 0) return DEFAULT_CATEGORIES;
+
+    const categoryDescriptions: Record<string, string> = {
+      "Men Hair styles": "Precision braids, cornrows, fades & locs designed for men",
+      "Knotless Braids": "Tension-free feed-in, seamless natural finish",
+      "Cornrows & Feed-In Styles": "Precision stitch lines & sleek scalp designs",
+      "Box Braids": "Classic square & triangle parts, durable hold",
+      "Fulani & Tribal Braids": "Intricate cultural patterns with curls & beads",
+      "Twists": "Bouncy passion twists & Senegalese rope twists",
+      "Locs & Crochet": "Distressed butterfly locs & crochet installs",
+      "Micro Braids & Extended Lengths": "Ultra-fine single braids & waist-length elegance",
+      "Custom & Specialty Styles": "Bespoke formal, bridal & ombre creations",
+      "Boho & Hybrid Braids": "Bohemian curls blended with neat protective braids",
+    };
+
+    const categoryMap: Record<string, { name: string; count: number; image: string; desc: string }> = {};
+
+    allStyles.forEach((style) => {
+      const cat = style.category?.trim();
+      if (!cat) return;
+
+      const validImg =
+        (style.images && style.images.find((img) => img && !img.includes("unsplash") && img !== "/images/logo.png")) ||
+        (style.images && style.images[0]) ||
+        "/images/logo.png";
+
+      if (!categoryMap[cat]) {
+        categoryMap[cat] = {
+          name: cat,
+          count: 0,
+          image: validImg,
+          desc: categoryDescriptions[cat] || style.shortDescription || "Protective styling crafted with care",
+        };
+      } else if (categoryMap[cat].image === "/images/logo.png" && validImg !== "/images/logo.png") {
+        categoryMap[cat].image = validImg;
+      }
+      categoryMap[cat].count++;
+    });
+
+    const priorityOrder = [
+      "Men Hair styles",
+      "Knotless Braids",
+      "Cornrows & Feed-In Styles",
+      "Box Braids",
+      "Fulani & Tribal Braids",
+      "Twists",
+      "Locs & Crochet",
+      "Micro Braids & Extended Lengths",
+      "Custom & Specialty Styles",
+      "Boho & Hybrid Braids",
+    ];
+
+    return Object.values(categoryMap)
+      .map((c) => ({
+        ...c,
+        count: `${c.count} ${c.count === 1 ? "Style" : "Styles"}`,
+      }))
+      .sort((a, b) => {
+        const iA = priorityOrder.indexOf(a.name);
+        const iB = priorityOrder.indexOf(b.name);
+        if (iA !== -1 && iB !== -1) return iA - iB;
+        if (iA !== -1) return -1;
+        if (iB !== -1) return 1;
+        return 0;
+      });
+  }, [allStyles]);
+
   const reviews = [
     {
       name: "Tanya M.",
       location: "Wollongong",
       rating: 5,
-      comment: "Afriglow is by far the best braiding experience in Wollongong! Medium knotless braids were completely tension-free, neat, and lasted over 7 weeks. Rose has such gentle hands.",
+      comment: "Afrihub is by far the best braiding experience in Wollongong! Medium knotless braids were completely tension-free, neat, and lasted over 7 weeks. Rose has such gentle hands.",
       style: "Medium Knotless Braids"
     },
     {
@@ -64,127 +187,132 @@ export default function HomePage() {
     }
   ];
 
-  const categoryIcons = [
-    { name: "Knotless Braids", count: "4+ Styles", desc: "Tension-free, natural scalp blend", image: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&w=600&q=80" },
-    { name: "Box Braids", count: "3+ Styles", desc: "Classic square & triangle parts", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" },
-    { name: "Cornrows", count: "4+ Styles", desc: "Sleek stitch & tribal patterns", image: "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=600&q=80" },
-    { name: "Protective Styles", count: "5+ Styles", desc: "Twists, butterfly locs & crochet", image: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?auto=format&fit=crop&w=600&q=80" }
-  ];
-
   return (
     <div className="space-y-24 md:space-y-32 pb-16">
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#14100D] via-[#1E1814] to-[#14100D] text-[#FAF7F2] pt-12 pb-24 md:pt-20 md:pb-32">
-        {/* Ambient Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#D4AF37]/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C5A059]/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* 1. HERO SECTION — LUXURY EDITORIAL GLASSMORPHISM */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0B0806] via-[#140F0C] to-[#1A130E] text-[#FAF7F2] min-h-[calc(100vh-5rem)] flex items-center justify-center">
+        {/* Ambient Glowing Orbs */}
+        <div className="absolute -top-24 -left-24 w-[750px] h-[750px] bg-[#D4AF37]/14 rounded-full blur-[170px] pointer-events-none animate-orb-pulse" />
+        <div className="absolute -bottom-28 -right-24 w-[650px] h-[650px] bg-[#B89223]/12 rounded-full blur-[150px] pointer-events-none animate-orb-pulse delay-700" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-[#D4AF37]/8 rounded-full blur-[120px] pointer-events-none animate-glow-pulse delay-300" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Content */}
+        {/* Specular Grain Texture */}
+        <div
+          className="absolute inset-0 opacity-[0.25] pointer-events-none z-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E")`,
+            mixBlendMode: "overlay"
+          }}
+        />
+
+        {/* Subtle Diagonal Texture */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0 opacity-[0.035]"
+          style={{
+            backgroundImage: "repeating-linear-gradient(-45deg, #D4AF37 0, #D4AF37 1px, transparent 0, transparent 48px)",
+            backgroundSize: "48px 48px"
+          }}
+        />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-16 lg:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            {/* LEFT: Typography & Actions */}
             <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
-              {/* Wollongong Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#272019] border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-semibold tracking-wider uppercase shadow-[0_2px_15px_rgba(212,175,55,0.2)]">
-                <Crown className="w-3.5 h-3.5 text-[#D4AF37]" />
-                Wollongong’s Premier Braiding & Protective Salon
+              {/* Status Pill Badge */}
+              <div className="flex justify-center lg:justify-start animate-badge-pop">
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#1C1510]/80 border border-[#D4AF37]/35 text-[#D4AF37] text-[11px] font-bold tracking-[0.25em] uppercase backdrop-blur-xl shadow-[0_0_25px_rgba(212,175,55,0.15)]">
+                  <Crown className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>AFRIHUB  HAIR STUDIO</span>
+                  <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-ping" />
+                </div>
               </div>
 
-              {/* Main Heading */}
-              <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold tracking-tight text-white leading-[1.15]">
-                Beautiful Braids. <br className="hidden sm:inline" />
-                <span className="text-gold-gradient italic">Made Just for You.</span>
-              </h1>
+              {/* Master Headline */}
+              <div className="space-y-4 animate-fade-in-up delay-150">
+                <h1 className="font-serif text-[2.75rem] sm:text-5xl lg:text-[3.5rem] xl:text-[3.9rem] font-bold text-white tracking-tight leading-[1.12]">
+                  <span className="block">Where Heritage Braiding</span>
+                  <span className="block text-gold-shimmer font-normal italic">Becomes High Fashion</span>
+                </h1>
+                {/* Gold Shimmer Divider */}
+                <div className="flex items-center justify-center lg:justify-start gap-3 pt-1">
+                  <div className="h-[2px] w-20 animate-shimmer-bg rounded-full" />
+                  <div className="w-2 h-2 rounded-full bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]" />
+                  <div className="h-[2px] w-10 bg-[#D4AF37]/40 rounded-full" />
+                </div>
+              </div>
 
-              {/* Subheading */}
-              <p className="text-neutral-300 text-base sm:text-lg md:text-xl font-normal leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Expert hair braiding with care, creativity and style. Discover beautiful, protective hairstyles tailored to your personality, lifestyle and occasion.
+              {/* Editorial Description */}
+              <p className="text-neutral-300 text-base sm:text-lg font-light leading-relaxed max-w-xl mx-auto lg:mx-0 animate-fade-in-up delay-300">
+                High-fashion protective styling crafted with masterful precision. Specialising in seamless,
+                tension-free knotless braids, goddess bohemian curls, and sculptured stitch patterns that
+                nourish your natural crown.
               </p>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              {/* Primary Call-to-Actions */}
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fade-in-up delay-400">
                 <Link
                   href="/hairstyles"
-                  className="btn-outline-gold !text-white hover:!text-[#120F0D] w-full sm:w-auto text-base font-semibold px-8 py-4 flex items-center justify-center gap-2"
+                  className="btn-gold w-full sm:w-auto font-bold tracking-wider uppercase text-xs sm:text-sm py-4 px-10 rounded-full inline-flex items-center justify-center gap-2.5 shadow-[0_6px_30px_rgba(212,175,55,0.45)] hover:shadow-[0_8px_35px_rgba(212,175,55,0.6)]"
                 >
-                  <Scissors className="w-4 h-4 text-[#D4AF37]" />
-                  Browse Hairstyles
+                  <Sparkles className="w-4 h-4 text-neutral-900" />
+                  Choose your hairstyles
                 </Link>
                 <Link
-                  href="/booking"
-                  className="btn-gold w-full sm:w-auto text-base font-semibold px-8 py-4 flex items-center justify-center gap-2"
+                  href="/terms"
+                  className="w-full sm:w-auto glass-card-light text-neutral-200 hover:text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center gap-2 px-8 py-4 rounded-full hover:border-[#D4AF37]/60 transition-all duration-300"
                 >
-                  <Calendar className="w-4 h-4" />
-                  Book Your Appointment
+                  <Scissors className="w-4 h-4 text-[#D4AF37]" />
+                  Terms & condition
                 </Link>
               </div>
 
-              {/* Trust Indicators */}
-              <div className="pt-6 border-t border-[#D4AF37]/20 flex flex-wrap items-center justify-center lg:justify-start gap-6 sm:gap-8 text-xs sm:text-sm text-neutral-300">
-                <div className="flex items-center gap-2">
-                  <div className="flex text-amber-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                  <span className="font-medium text-white">5.0 Star Rated Salon</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Tension-Free Gentle Technique</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-[#D4AF37]" />
-                  <span>7–9 Corrimal St, Wollongong</span>
-                </div>
-              </div>
+            
             </div>
 
-            {/* Right Visual / Hero Hair Braiding Showcase */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-[420px] aspect-[4/5] sm:aspect-square rounded-3xl p-2.5 bg-gradient-to-tr from-[#D4AF37] via-[#F5DF8E] to-[#997523] shadow-[0_0_60px_rgba(212,175,55,0.3)] group">
-                <div className="relative w-full h-full rounded-[22px] overflow-hidden border-2 border-[#14100D] bg-[#14100D]">
+            {/* RIGHT: Editorial Architectural Showcase */}
+            <div className="lg:col-span-5 flex justify-center relative animate-fade-in-right delay-200">
+              <div className="relative w-full max-w-[470px]">
+                {/* Floating Top Badge */}
+               
+
+                {/* Arched Architectural Photo Frame */}
+                <div className="relative w-full aspect-[4/5] rounded-t-[160px] rounded-b-[40px] overflow-hidden border-2 border-[#D4AF37]/45 shadow-[0_0_90px_rgba(212,175,55,0.2),0_30px_70px_rgba(0,0,0,0.7)] bg-[#1A1410] group">
                   <Image
                     src="/images/hero_showcase.png"
-                    alt="Afriglow Luxury Hair Braiding Showcase"
+                    alt="Afrihub Expert Hair Stylist & Braiding Artist"
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    sizes="(max-width: 768px) 100vw, 470px"
+                    className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
                     priority
+                    unoptimized
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  {/* Subtle vignette gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0806]/70 via-transparent to-transparent pointer-events-none" />
+                  {/* Inner hairline accent */}
+                  <div className="absolute inset-[8px] rounded-t-[152px] rounded-b-[32px] border border-[#D4AF37]/20 pointer-events-none" />
                 </div>
 
-                {/* Floating Top Badge */}
-                <div className="absolute top-5 right-5 bg-[#1F1814]/90 backdrop-blur-md border border-[#D4AF37]/50 rounded-full px-3.5 py-1 text-[11px] text-[#D4AF37] font-semibold flex items-center gap-1.5 shadow-lg">
-                  <Sparkles className="w-3 h-3 text-[#D4AF37]" /> Expert Braider
-                </div>
-
-                {/* Floating Bottom Trust Card */}
-                <div className="absolute -bottom-4 -left-4 sm:bottom-4 sm:-left-6 bg-[#1F1814]/95 backdrop-blur-md border border-[#D4AF37]/40 rounded-2xl p-4 shadow-xl text-xs max-w-[210px] text-white">
-                  <div className="flex items-center gap-1.5 text-[#D4AF37] font-semibold mb-1">
-                    <Sparkles className="w-3.5 h-3.5" /> Book Your Style
-                  </div>
-                  <p className="text-neutral-300 text-[11px] leading-tight">
-                    Instant appointment booking with secure deposit in Wollongong.
-                  </p>
-                </div>
+              
               </div>
             </div>
           </div>
+
+         
+        
         </div>
       </section>
-
       {/* 2. INTRO SECTION */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="space-y-6">
-          <span className="badge-gold">Welcome to Afriglow</span>
+          <span className="badge-gold">Welcome to Afrihub</span>
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#14100D] tracking-tight">
             Your Style. Your Beauty. <br />
-            <span className="text-[#B89223] italic">Your Afriglow.</span>
+            
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full" />
           <div className="space-y-4 text-neutral-600 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto font-normal">
             <p>
-              At Afriglow, we believe your hairstyle is more than just a look — it&apos;s an expression of your personality.
+              At Afrihub, we believe your hairstyle is more than just a look â€” it&apos;s an expression of your personality.
             </p>
             <p>
               We specialise in beautiful braided hairstyles created with attention to detail, creativity and care. Whether you&apos;re looking for a protective everyday style, a fresh new look or something special for an occasion, we&apos;ll help you find a style that suits you.
@@ -270,7 +398,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* 4. STYLE CATEGORIES */}
+      {/* 4. STYLE CATEGORIES (DYNAMIC LIVE DATABASE) */}
       <section className="bg-[#FAF6EE] py-20 border-y border-[#EBE1D0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-3 mb-12">
@@ -279,35 +407,46 @@ export default function HomePage() {
               Discover Our Braiding Categories
             </h2>
             <p className="text-neutral-600 text-sm max-w-xl mx-auto">
-              From seamless knotless braids to intricate stitch patterns, find the exact category for your next look.
+              From seamless knotless braids to intricate stitch patterns, explore our active salon catalogue by style.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categoryIcons.map((cat, idx) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {liveCategories.map((cat, idx) => (
               <Link
                 key={idx}
                 href={`/hairstyles?category=${encodeURIComponent(cat.name)}`}
-                className="group relative h-72 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 block border border-[#E0D5C3]"
+                className="group relative h-80 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:border-[#D4AF37]/60 transition-all duration-300 block border border-[#E0D5C3]"
               >
                 <Image
                   src={cat.image}
                   alt={cat.name}
                   fill
-                  className="object-cover group-hover:scale-108 transition-transform duration-700"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                {/* Multi-stop gradient overlay for legibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent group-hover:from-black/95 transition-colors" />
 
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white space-y-1.5">
-                  <span className="text-[11px] tracking-widest uppercase text-[#D4AF37] font-semibold">
+                {/* Top Badge: Category Count */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#14100D]/85 text-[#D4AF37] border border-[#D4AF37]/35 backdrop-blur-md shadow-sm">
                     {cat.count}
                   </span>
-                  <h3 className="font-serif text-xl font-bold group-hover:text-[#D4AF37] transition-colors">
+                </div>
+
+                {/* Bottom Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white space-y-1.5 z-10">
+                  <h3 className="font-serif text-xl font-bold group-hover:text-[#D4AF37] transition-colors line-clamp-1">
                     {cat.name}
                   </h3>
-                  <p className="text-neutral-300 text-xs line-clamp-1">
+                  <p className="text-neutral-300 text-xs line-clamp-2 leading-relaxed">
                     {cat.desc}
                   </p>
+                  <div className="pt-2 flex items-center gap-1 text-[11px] font-semibold text-[#D4AF37] group-hover:translate-x-1 transition-transform">
+                    <span>View Styles</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </div>
                 </div>
               </Link>
             ))}
@@ -315,10 +454,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. WHY CHOOSE AFRIGLOW? */}
+      {/* 5. WHY CHOOSE AFRIHUB? */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-3 mb-16">
-          <span className="badge-gold">The Afriglow Standard</span>
+          <span className="badge-gold">The Afrihub Standard</span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#14100D]">
             Braiding With Care, Creativity & Style
           </h2>
@@ -330,8 +469,8 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Pillar 1 */}
           <div className="p-8 rounded-2xl bg-white border border-[#EAE2D5] shadow-sm hover:shadow-lg hover:border-[#D4AF37]/40 transition-all duration-300 space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-xl">
-              ✨
+            <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
+              <Sparkles className="w-6 h-6" />
             </div>
             <h3 className="font-serif text-xl font-bold text-[#14100D]">
               Expert Styling
@@ -343,8 +482,8 @@ export default function HomePage() {
 
           {/* Pillar 2 */}
           <div className="p-8 rounded-2xl bg-white border border-[#EAE2D5] shadow-sm hover:shadow-lg hover:border-[#D4AF37]/40 transition-all duration-300 space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-xl">
-              💫
+            <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
+              <Crown className="w-6 h-6" />
             </div>
             <h3 className="font-serif text-xl font-bold text-[#14100D]">
               Styles Made for You
@@ -356,8 +495,8 @@ export default function HomePage() {
 
           {/* Pillar 3 */}
           <div className="p-8 rounded-2xl bg-white border border-[#EAE2D5] shadow-sm hover:shadow-lg hover:border-[#D4AF37]/40 transition-all duration-300 space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-xl">
-              ❤️
+            <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
+              <Heart className="w-6 h-6 fill-current" />
             </div>
             <h3 className="font-serif text-xl font-bold text-[#14100D]">
               Quality & Care
@@ -369,14 +508,14 @@ export default function HomePage() {
 
           {/* Pillar 4 */}
           <div className="p-8 rounded-2xl bg-white border border-[#EAE2D5] shadow-sm hover:shadow-lg hover:border-[#D4AF37]/40 transition-all duration-300 space-y-4">
-            <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-xl">
-              📍
+            <div className="w-12 h-12 rounded-xl bg-[#FAF3E0] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
+              <MapPin className="w-6 h-6" />
             </div>
             <h3 className="font-serif text-xl font-bold text-[#14100D]">
-              Wollongong Location
+              Central Wollongong
             </h3>
             <p className="text-neutral-600 text-sm leading-relaxed">
-              Convenient salon located at 7–9 Corrimal Street, Wollongong NSW 2500 with easy parking and public transit access.
+              Centrally located salon with convenient parking and accessible public transit connections.
             </p>
           </div>
         </div>
@@ -444,7 +583,7 @@ export default function HomePage() {
                 Get Ready to Glow
               </h3>
               <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
-                Come to 7–9 Corrimal Street, relax in our chair, and let Afriglow create your look.
+                Relax in our comfortable Wollongong salon chair, and let Afrihub create your signature look.
               </p>
             </div>
           </div>
@@ -469,7 +608,7 @@ export default function HomePage() {
             Loved by Wollongong Clients
           </h2>
           <p className="text-neutral-600 text-sm max-w-xl mx-auto">
-            Read what our clients have to say about their Afriglow braiding experience.
+            Read what our clients have to say about their Afrihub braiding experience.
           </p>
         </div>
 
@@ -521,7 +660,7 @@ export default function HomePage() {
                 <span className="text-gold-gradient italic">Book Your Appointment</span>
               </h2>
               <p className="text-neutral-300 text-sm sm:text-base leading-relaxed">
-                Visit Afriglow at 7–9 Corrimal Street, Wollongong NSW 2500. We recommend booking in advance to guarantee your preferred date and time slot.
+                Visit our welcoming Wollongong salon. We recommend booking in advance to guarantee your preferred date and time slot.
               </p>
 
               <div className="space-y-3 pt-2">
@@ -561,7 +700,7 @@ export default function HomePage() {
                   allowFullScreen={false}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Afriglow Salon Location"
+                  title="Afrihub Salon Location"
                   className="w-full h-full grayscale-[30%] contrast-[110%]"
                 />
               </div>

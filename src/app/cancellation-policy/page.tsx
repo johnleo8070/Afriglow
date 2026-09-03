@@ -27,82 +27,95 @@ export default function CancellationPolicyPage() {
 
           {/* Policy Sections */}
           <div className="space-y-8">
-            {/* 1. Cancellation */}
+            {/* 1. Non-Refundable Booking Deposit */}
             <div className="space-y-3">
               <h2 className="font-serif text-2xl font-bold text-[#14100D] flex items-center gap-2">
                 <span className="w-7 h-7 rounded-full bg-[#14100D] text-[#D4AF37] text-xs flex items-center justify-center font-sans">
                   1
                 </span>
-                How to Cancel an Appointment
+                Booking Deposit ( initial deposit fee Non-Refundable)
               </h2>
               <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
-                Clients may cancel their appointment by directly contacting Afriglow via telephone/SMS at <strong>{SALON_INFO.phone}</strong> or by email at <strong>{SALON_INFO.email}</strong>. Please include your Full Name, Booking Reference Number, and appointment date.
+                An <strong> initial Non-Refundable deposit fee </strong> is required to secure your appointment time slot on our calendar. This deposit is credited towards the final balance of your hairstyle service on the day.
               </p>
+              <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE2D5] text-xs text-neutral-700 space-y-1">
+                <p>• <strong>Cancellations:</strong> If you cancel your appointment, your deposit will be forfeited.</p>
+                <p>• <strong>No-Shows:</strong> If you do not show up for your scheduled booking, your deposit is forfeited and future bookings may require full upfront payment.</p>
+              </div>
             </div>
 
-            {/* 2. Rescheduling & Notice */}
+            {/* 2. Rescheduling Policy (72h / 48h Rules) */}
             <div className="space-y-3">
               <h2 className="font-serif text-2xl font-bold text-[#14100D] flex items-center gap-2">
                 <span className="w-7 h-7 rounded-full bg-[#14100D] text-[#D4AF37] text-xs flex items-center justify-center font-sans">
                   2
                 </span>
-                Rescheduling & Notice Periods
+                Rescheduling Rules & Notice Periods
               </h2>
               <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
-                Appointments may be rescheduled subject to schedule availability. We ask for at least <strong>24 to 48 hours&apos; notice</strong> prior to your scheduled booking time so that we may offer the reserved time slot to waiting clients.
+                We understand that unexpected schedule conflicts arise. You may reschedule your appointment subject to the following rules:
               </p>
-              <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE2D5] text-xs text-neutral-700">
-                ✔️ Notice given &gt; 48 hours in advance: Your booking deposit is transferred to your new rescheduled appointment date without penalty.
+              <div className="grid sm:grid-cols-2 gap-4 pt-1">
+                <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#D4AF37]/30 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#8C6B16]">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    Notice &gt; 72 Hours (Free)
+                  </div>
+                  <p className="text-xs text-neutral-700 leading-relaxed">
+                    You can reschedule your appointment <strong>only one time</strong> on the same deposit if requested at least <strong>72 hours</strong> prior to your scheduled time.
+                  </p>
+                </div>
+                <div className="p-4 rounded-xl bg-[#FFF8F0] border border-amber-300 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-800">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    Under 48 Hours ($30 Fee)
+                  </div>
+                  <p className="text-xs text-neutral-700 leading-relaxed">
+                    A rescheduling fee of <strong>$30</strong> applies if you reschedule within <strong>48 hours&apos; notice</strong> before your appointment.
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* 3. Late Cancellations */}
+            {/* 3. Late Arrivals & Grace Period */}
             <div className="space-y-3">
               <h2 className="font-serif text-2xl font-bold text-[#14100D] flex items-center gap-2">
                 <span className="w-7 h-7 rounded-full bg-[#14100D] text-[#D4AF37] text-xs flex items-center justify-center font-sans">
                   3
                 </span>
-                Late Cancellations
+                Late Arrivals & 15-Minute Grace Period
               </h2>
               <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
-                Where an appointment is cancelled with less than the required notice (under 24 hours), the booking deposit fee may be retained to cover reserved salon preparation time, subject to applicable Australian Consumer Law.
+                Please send a courtesy message or call Rose at <strong>{SALON_INFO.phone}</strong> as soon as you know you may be delayed.
               </p>
+              <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE2D5] text-xs text-neutral-700 space-y-2">
+                <p>• <strong>15-Minute Grace Period:</strong> We provide a 15-minute grace period for minor traffic delays.</p>
+                <p>• <strong>Late Fee ($20):</strong> If you arrive past the 15-minute grace period, a <strong>$20 late fee</strong> will be added to your service bill.</p>
+                <p>• <strong>Automatic Cancellation after 1 Hour:</strong> Appointments are automatically cancelled if you are more than <strong>1 hour late</strong>, and your booking deposit will be forfeited to cover reserved stylist time.</p>
+              </div>
             </div>
 
-            {/* 4. No-Shows */}
+            {/* 4. How to Contact for Cancellations & Rescheduling */}
             <div className="space-y-3">
               <h2 className="font-serif text-2xl font-bold text-[#14100D] flex items-center gap-2">
                 <span className="w-7 h-7 rounded-full bg-[#14100D] text-[#D4AF37] text-xs flex items-center justify-center font-sans">
                   4
                 </span>
-                No-Shows
+                How to Reschedule or Notify Us
               </h2>
               <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
-                If a client does not attend a scheduled appointment and does not contact Afriglow prior to the booking time, the booking deposit fee will be forfeited and future appointments may require full prepayment upfront.
+                To reschedule or notify us of delays, call or text Afrihub directly at <strong>{SALON_INFO.phone}</strong>. If your matter is urgent, please <strong>call rather than messaging</strong> so we can assist immediately.
               </p>
             </div>
 
-            {/* 5. Late Arrivals */}
-            <div className="space-y-3">
-              <h2 className="font-serif text-2xl font-bold text-[#14100D] flex items-center gap-2">
-                <span className="w-7 h-7 rounded-full bg-[#14100D] text-[#D4AF37] text-xs flex items-center justify-center font-sans">
-                  5
-                </span>
-                Late Arrivals
-              </h2>
-              <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
-                Please let us know if you are running late. Arriving more than 15–20 minutes late may reduce the amount of styling time available. Depending on delay severity and the hairstyle booked, Afriglow may need to simplify the styling design or reschedule the appointment to avoid delaying subsequent clients.
-              </p>
-            </div>
-
-            {/* 6. Australian Consumer Law Guarantee */}
+            {/* 5. Australian Consumer Law Guarantee */}
             <div className="p-6 rounded-2xl bg-[#FFFDF9] border-2 border-[#D4AF37]/40 space-y-3">
               <div className="flex items-center gap-2 text-[#8C6B16] font-bold text-base">
                 <ShieldCheck className="w-5 h-5" />
                 Australian Consumer Law Guarantees
               </div>
               <p className="text-neutral-700 text-xs sm:text-sm leading-relaxed">
-                Nothing in this Cancellation Policy excludes, restricts, or modifies any consumer rights or statutory guarantees provided under the <em>Competition and Consumer Act 2010 (Cth)</em> and Australian Consumer Law. In New South Wales, consumer guarantees apply to beauty and personal care services, and appropriate remedies remain available in circumstances where a service fails to meet legal consumer guarantees.
+                Nothing in this Cancellation & Rescheduling Policy excludes, restricts, or modifies any consumer rights or statutory guarantees provided under the <em>Competition and Consumer Act 2010 (Cth)</em> and Australian Consumer Law. In New South Wales, statutory consumer guarantees apply to beauty and personal care services, and appropriate remedies remain available in circumstances where a service fails to meet legal consumer guarantees.
               </p>
             </div>
           </div>

@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       const anyAdmin = await db.select().from(admins).limit(1);
       if (anyAdmin.length === 0) {
         // Create new admin
-        const hashedPassword = await bcrypt.hash(newPassword || "afriglow2026", 10);
+        const hashedPassword = await bcrypt.hash(newPassword || "afrihub2026", 10);
         await db.insert(admins).values({
           username: newUsername || currentUsername,
           password: hashedPassword,

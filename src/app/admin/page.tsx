@@ -84,7 +84,7 @@ export default function AdminDashboard() {
 
   // Login form state
   const [loginUsername, setLoginUsername] = useState("rosebavong@gmail.com");
-  const [loginPassword, setLoginPassword] = useState("afriglow2026");
+  const [loginPassword, setLoginPassword] = useState("afrihub2026");
   const [loginLoading, setLoginLoading] = useState(false);
 
   // Active Tab
@@ -128,8 +128,8 @@ export default function AdminDashboard() {
 
   // Check auth on mount
   useEffect(() => {
-    const token = localStorage.getItem("afriglow_admin_token");
-    const userStr = localStorage.getItem("afriglow_admin_user");
+    const token = localStorage.getItem("afrihub_admin_token");
+    const userStr = localStorage.getItem("afrihub_admin_user");
     if (token && userStr) {
       try {
         setAdminUser(JSON.parse(userStr));
@@ -183,11 +183,11 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.setItem("afriglow_admin_token", data.token || "logged_in");
-        localStorage.setItem("afriglow_admin_user", JSON.stringify(data.data || { username: loginUsername }));
+        localStorage.setItem("afrihub_admin_token", data.token || "logged_in");
+        localStorage.setItem("afrihub_admin_user", JSON.stringify(data.data || { username: loginUsername }));
         setAdminUser(data.data || { username: loginUsername });
         setIsAuthenticated(true);
-        showToast("success", "Welcome back to Afriglow Admin!");
+        showToast("success", "Welcome back to Afrihub Admin!");
       } else {
         showToast("error", data.error || "Invalid username or password.");
       }
@@ -199,8 +199,8 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("afriglow_admin_token");
-    localStorage.removeItem("afriglow_admin_user");
+    localStorage.removeItem("afrihub_admin_token");
+    localStorage.removeItem("afrihub_admin_user");
     setIsAuthenticated(false);
     setAdminUser(null);
     showToast("info", "Logged out of admin dashboard.");
@@ -410,7 +410,7 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (data.success || data.message) {
-        showToast("success", "Default Afriglow catalogue styles loaded into database!");
+        showToast("success", "Default Afrihub catalogue styles loaded into database!");
         fetchDashboardData();
       } else {
         showToast("error", data.error || "Failed to load sample styles.");
@@ -442,7 +442,7 @@ export default function AdminDashboard() {
         showToast("success", "Admin login credentials updated in Supabase database!");
         if (newUsername.trim()) {
           setAdminUser({ username: newUsername.trim() });
-          localStorage.setItem("afriglow_admin_user", JSON.stringify({ username: newUsername.trim() }));
+          localStorage.setItem("afrihub_admin_user", JSON.stringify({ username: newUsername.trim() }));
         }
         setNewPassword("");
         setNewUsername("");
@@ -489,10 +489,10 @@ export default function AdminDashboard() {
         <div className="max-w-md w-full rounded-3xl bg-[#1C1714] border border-[#D4AF37]/30 shadow-2xl p-8 space-y-6">
           <div className="text-center space-y-3">
             <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-[#D4AF37] mx-auto shadow-[0_0_20px_rgba(212,175,55,0.3)]">
-              <Image src="/images/logo.png" alt="Afriglow Logo" fill className="object-cover" priority />
+              <Image src="/images/logo.png" alt="Afrihub Logo" fill className="object-cover" priority unoptimized />
             </div>
             <h1 className="font-serif text-2xl font-bold text-white">
-              Afriglow Admin Portal
+              Afrihub Admin Portal
             </h1>
             <p className="text-neutral-400 text-xs">
               Enter your credentials to manage appointments, catalogue & salon settings.
@@ -532,7 +532,7 @@ export default function AdminDashboard() {
               <div className="font-semibold flex items-center gap-1">
                 <KeyRound className="w-3 h-3" /> Default Login Credentials:
               </div>
-              <p className="text-neutral-300">User: <strong>rosebavong@gmail.com</strong> | Pass: <strong>afriglow2026</strong></p>
+              <p className="text-neutral-300">User: <strong>rosebavong@gmail.com</strong> | Pass: <strong>afrihub2026</strong></p>
               <p className="text-neutral-400 text-[10px]">*You can change username & password anytime inside Admin Settings.</p>
             </div>
 
@@ -555,7 +555,7 @@ export default function AdminDashboard() {
 
           <div className="text-center pt-2">
             <Link href="/" className="text-xs text-neutral-400 hover:text-[#D4AF37] transition-colors">
-              ← Return to Afriglow Live Website
+              ← Return to Afrihub Live Website
             </Link>
           </div>
         </div>
@@ -571,14 +571,14 @@ export default function AdminDashboard() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#14100D] text-white p-6 rounded-3xl border border-[#D4AF37]/30 shadow-lg">
           <div className="flex items-center gap-4">
             <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-[#D4AF37]">
-              <Image src="/images/logo.png" alt="Afriglow Logo" fill className="object-cover" />
+              <Image src="/images/logo.png" alt="Afrihub Logo" fill className="object-cover" unoptimized />
             </div>
             <div>
               <span className="text-[10px] tracking-widest uppercase text-[#D4AF37] font-semibold block">
                 Connected to Live Supabase DB
               </span>
               <h1 className="font-serif text-2xl font-bold text-white">
-                Afriglow Salon Dashboard
+                Afrihub Salon Dashboard
               </h1>
               <p className="text-xs text-neutral-400">Logged in as {adminUser?.username || "Admin"}</p>
             </div>
@@ -850,7 +850,7 @@ export default function AdminDashboard() {
                     Catalogue is Ready for Live Products
                   </h3>
                   <p className="text-neutral-500 text-xs sm:text-sm max-w-md mx-auto">
-                    You currently have no hairstyles in the database catalogue. Add your custom live hairstyles, or populate the default Afriglow catalogue styles.
+                    You currently have no hairstyles in the database catalogue. Add your custom live hairstyles, or populate the default Afrihub catalogue styles.
                   </p>
                 </div>
                 <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
@@ -871,7 +871,7 @@ export default function AdminDashboard() {
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> Load Default Afriglow Styles
+                        <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> Load Default Afrihub Styles
                       </>
                     )}
                   </button>

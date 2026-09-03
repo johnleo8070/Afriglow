@@ -29,20 +29,20 @@ export default function HowItWorksPage() {
     {
       num: "03",
       title: "Secure Your Booking Online",
-      desc: "Enter your contact details and pay a small booking deposit online. Your booking fee is safely deducted from your total balance on the day of your appointment.",
-      tip: "You will receive an instant email confirmation with your booking details and a calendar invite."
+      desc: "Enter your contact details and pay the $50 non-refundable booking deposit. Your deposit is credited towards your total balance on appointment day, with in-salon payment options including Cash, EFTPOS, and Afterpay.",
+      tip: "You will receive an instant email confirmation with your booking reference, address, and styling details."
     },
     {
       num: "04",
       title: "Prepare Your Natural Hair",
-      desc: "To ensure the best, fastest, and longest-lasting results, please arrive with clean, dry, and thoroughly detangled hair. Hair should be blown out from roots to ends without heavy grease.",
-      tip: "We provide proper salon-grade scalp hydration, edge control, and hair finishing treatments."
+      desc: "Natural hair must be at least 3 inches long, freshly washed, completely detangled, and blown out straight from roots to ends without heavy grease. Extensions are included for most styles (or bring your pre-stretched hair 24h prior).",
+      tip: "Need a detangle and blow-out? We offer in-salon prep for $20. (Service refused if hair is unwashed)."
     },
     {
       num: "05",
-      title: "Relax & Glow at Afriglow",
-      desc: "Arrive at 7–9 Corrimal Street, Wollongong NSW 2500. Sit back, relax, and let Afriglow craft your look with precision, creativity, and gentle tension.",
-      tip: "Enjoy our relaxing salon atmosphere, Wi-Fi, and refreshments during your session."
+      title: "Relax & Glow at Afrihub",
+      desc: "Arrive at our welcoming Wollongong studio (15-minute grace period applies). You are welcome to bring one guest and your favourite snacks. Sit back, relax, and let Afrihub craft your look with gentle tension.",
+      tip: "Enjoy complimentary Wi-Fi and entertainment. Satin bonnets and maintenance wraps are available in-store."
     }
   ];
 
@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
         <div className="p-8 sm:p-12 rounded-3xl bg-[#14100D] text-[#FAF7F2] text-center space-y-6 border border-[#D4AF37]/30">
           <Sparkles className="w-10 h-10 text-[#D4AF37] mx-auto" />
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">
-            Ready to Experience the Afriglow Touch?
+            Ready to Experience the Afrihub Touch?
           </h2>
           <p className="text-neutral-300 text-sm sm:text-base max-w-xl mx-auto">
             Book your appointment online in just under 2 minutes.

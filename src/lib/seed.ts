@@ -38,7 +38,7 @@ export async function seedDatabase(forceHairstyles = false) {
         .limit(1);
 
       if (!existingAdmin || existingAdmin.length === 0) {
-        const hashedPassword = await bcrypt.hash("afriglow2026", 10);
+        const hashedPassword = await bcrypt.hash("afrihub2026", 10);
         await supabase.from("admins").insert({
           username: "rosebavong@gmail.com",
           password: hashedPassword,
@@ -67,7 +67,7 @@ export async function seedDatabase(forceHairstyles = false) {
         await supabase.from("settings").upsert(s, { onConflict: "key" });
       }
 
-      return { success: true, message: "Afriglow database seeded successfully!" };
+      return { success: true, message: "Afrihub database seeded successfully!" };
     }
 
     // Direct Drizzle fallback
@@ -102,9 +102,9 @@ export async function seedDatabase(forceHairstyles = false) {
       );
     }
 
-    return { success: true, message: "Afriglow database seeded successfully!" };
+    return { success: true, message: "Afrihub database seeded successfully!" };
   } catch (error: any) {
-    console.error("Afriglow seed error:", error);
+    console.error("Afrihub seed error:", error);
     throw error;
   }
 }

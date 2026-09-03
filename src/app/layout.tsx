@@ -7,20 +7,21 @@ import ToastContainer from "@/components/Toast";
 import MainWrapper from "@/components/MainWrapper";
 
 export const metadata: Metadata = {
-  title: "Afriglow | Expert Hair Braiding & Protective Styling | Wollongong NSW",
+  metadataBase: new URL("https://afrihub.com.au"),
+  title: "Afrihub | Expert Hair Braiding & Protective Styling | Wollongong NSW",
   description: "Expert hair braiding with care, creativity and style. Knotless braids, cornrows, box braids, and protective styles in Wollongong NSW. Book your appointment today.",
-  keywords: "hair braiding, knotless braids, box braids, cornrows, protective hairstyles, Wollongong hair braider, Afriglow, hair styling Wollongong NSW",
+  keywords: "hair braiding, knotless braids, box braids, cornrows, protective hairstyles, Wollongong hair braider, Afrihub, hair styling Wollongong NSW",
   openGraph: {
-    title: "Afriglow | Expert Hair Braiding With Care, Creativity & Style",
-    description: "Discover beautiful, protective hairstyles tailored to your personality at 7–9 Corrimal Street, Wollongong NSW 2500.",
-    url: "https://afriglow.com.au",
-    siteName: "Afriglow",
+    title: "Afrihub | Expert Hair Braiding With Care, Creativity & Style",
+    description: "Discover beautiful, tension-free protective hairstyles tailored to your personality at Afrihub in Wollongong, NSW.",
+    url: "https://afrihub.com.au",
+    siteName: "Afrihub",
     images: [
       {
         url: "/images/logo.png",
         width: 1024,
         height: 1024,
-        alt: "Afriglow Hair Styling",
+        alt: "Afrihub Hair Styling",
       },
     ],
     locale: "en_AU",

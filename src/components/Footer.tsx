@@ -18,16 +18,18 @@ export default function Footer() {
           {/* Brand Col */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.3)] bg-[#14100D] flex items-center justify-center">
                 <Image
                   src="/images/logo.png"
-                  alt="Afriglow Hair Styling"
+                  alt="Afrihub Hair Styling"
                   fill
+                  sizes="64px"
                   className="object-cover"
+                  unoptimized
                 />
               </div>
               <div>
-                <span className="font-serif text-2xl font-bold text-white block">Afriglow</span>
+                <span className="font-serif text-2xl font-bold text-white block">Afrihub</span>
                 <span className="text-[10px] tracking-[0.25em] uppercase text-[#D4AF37] font-semibold block -mt-1">
                   Hair Styling
                 </span>
@@ -49,7 +51,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h4 className="text-base font-serif font-bold mb-4 text-[#D4AF37] tracking-wider uppercase text-xs">
-              Explore Afriglow
+              Explore Afrihub
             </h4>
             <ul className="space-y-2.5 text-sm text-neutral-300">
               <li>
@@ -62,11 +64,7 @@ export default function Footer() {
                   Hairstyles Catalogue
                 </Link>
               </li>
-              <li>
-                <Link href="/services" className="hover:text-[#D4AF37] transition-colors">
-                  Our Services
-                </Link>
-              </li>
+
               <li>
                 <Link href="/about" className="hover:text-[#D4AF37] transition-colors">
                   About Us
@@ -167,7 +165,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col items-center justify-center gap-2 text-xs text-neutral-400 text-center">
           <p>
-            © {new Date().getFullYear()} Afriglow. All rights reserved. developed by{" "}
+            © {new Date().getFullYear()} Afrihub. All rights reserved. developed by{" "}
             <a href="https://www.gstatmobile.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37] transition-colors underline underline-offset-2">
               gstat mobile solutions
             </a>

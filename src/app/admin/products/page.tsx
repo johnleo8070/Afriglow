@@ -27,10 +27,23 @@ interface Product {
   isNew: boolean;
 }
 
+const DEFAULT_PRODUCT_CATEGORIES = [
+  { id: 1, name: "Men Hair styles", slug: "men-hair-styles" },
+  { id: 2, name: "Knotless Braids", slug: "knotless-braids" },
+  { id: 3, name: "Cornrows & Feed-In Styles", slug: "cornrows-feed-in-styles" },
+  { id: 4, name: "Box Braids", slug: "box-braids" },
+  { id: 5, name: "Fulani & Tribal Braids", slug: "fulani-tribal-braids" },
+  { id: 6, name: "Twists", slug: "twists" },
+  { id: 7, name: "Locs & Crochet", slug: "locs-crochet" },
+  { id: 8, name: "Micro Braids & Extended Lengths", slug: "micro-braids-extended-lengths" },
+  { id: 9, name: "Kids Styles", slug: "kids-styles" },
+  { id: 10, name: "Custom & Specialty Styles", slug: "custom-specialty-styles" }
+];
+
 export default function AdminProductsPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>(DEFAULT_PRODUCT_CATEGORIES);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);

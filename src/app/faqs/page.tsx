@@ -10,46 +10,103 @@ export default function FAQPage() {
 
   const faqs = [
     {
+      q: "Is a deposit required?",
+      a: "Yes. A non-refundable deposit of 25% of the total price of your chosen hairstyle is required to secure your appointment. This deposit will be deducted from the total cost of your service on the day."
+    },
+    {
       q: "Do I need to book an appointment?",
       a: "Yes. Appointments are strongly recommended to guarantee your preferred date, time slot, and dedicated stylist attention. You can easily book online through our website in a couple of minutes."
     },
     {
-      q: "Where are you located?",
-      a: `Afriglow is located at 7–9 Corrimal Street, Wollongong NSW 2500, Australia. We are situated in a convenient central location with easy nearby parking and transit connections.`
-    },
-    {
       q: "How do I book an appointment?",
-      a: "Booking is simple: Browse our Hairstyles catalogue, pick your desired hairstyle and length, choose an available date and time slot, enter your contact information and hair details, and complete your secure booking deposit online. You will receive an immediate email confirmation."
+      a: "Booking is simple: browse our Hairstyles catalogue, pick your desired hairstyle and length, choose an available date and time slot, enter your contact information and hair details, and complete your secure booking deposit online. You will receive an immediate email confirmation with your appointment details and salon address."
     },
     {
-      q: "Do I need to bring my own hair extensions?",
-      a: "This depends on the specific hairstyle you select. Please check the individual hairstyle description and specifications before booking. For most braided styles, clients bring their preferred pre-stretched braiding hair (such as X-Pression) or purchase packs available in-salon."
+      q: "Where can I find the address for my appointment?",
+      a: `The appointment address will be included in your confirmation email once booking is completed. You can also reach us at ${SALON_INFO.phone} or ${SALON_INFO.email}.`
     },
     {
-      q: "How should I prepare my hair before my appointment?",
-      a: "Unless otherwise specified, we ask all clients to arrive with freshly washed, clean, completely dry, and thoroughly detangled hair. Blow-drying your hair out straight from roots to ends helps ensure razor-sharp parting and painless styling. Please avoid applying heavy oils or butter immediately before your visit, as we provide premium scalp hydration in-salon."
+      q: "Where are you located?",
+      a: `Afrihub is located in Wollongong, NSW 2500, Australia. The exact address is included in your booking confirmation email. We are situated in a convenient central location with easy nearby parking and transit connections.`
     },
     {
-      q: "Can I reschedule my appointment?",
-      a: "Yes, appointments may be rescheduled subject to availability and our Cancellation & Rescheduling Policy. We kindly ask for at least 24 to 48 hours' notice prior to your scheduled appointment time so we can accommodate other clients."
+      q: "What if I need to reschedule?",
+      a: `You can reschedule your appointment up to 48 hours before your scheduled appointment time. Please note: you can only reschedule your appointment once on the same deposit. To reschedule, please contact us by email at ${SALON_INFO.email} or by SMS at ${SALON_INFO.phone}. If there is no availability at your preferred time, please send us an email or text message for further assistance.`
+    },
+    {
+      q: "What happens if I cancel my appointment?",
+      a: "If you cancel your appointment, your deposit is non-refundable. If you decide to rebook at a later date, a new deposit will be required to secure your next appointment."
+    },
+    {
+      q: "Can I still come to my appointment if I feel unwell?",
+      a: "No. For the health and safety of our stylists and other clients, you must reschedule or cancel your appointment if you have any symptoms or are feeling unwell. Please contact us as soon as possible so we can free up your time slot."
+    },
+    {
+      q: "What happens if I don't show up for my appointment?",
+      a: "If you do not show up for your appointment without cancelling or rescheduling in advance, your deposit will be forfeited. You will also be unable to make future appointments online without contacting us directly."
     },
     {
       q: "What happens if I am running late?",
-      a: "Please contact Afriglow as soon as possible via phone or SMS (0451 211 170). Arriving late reduces the styling time available. Depending on how late you arrive and the duration required for your booked style, we may need to modify the style or reschedule the appointment."
+      a: `If you are running late, please contact us in advance via email or SMS at ${SALON_INFO.phone}. A $20 late fee will be charged if you are more than 15 minutes late. Your appointment may be cancelled if you are more than 30 minutes late.`
+    },
+    {
+      q: "Can I arrive early for my appointment?",
+      a: `Yes. If you arrive earlier than your scheduled appointment time, please send us a text message at ${SALON_INFO.phone} to let us know that you have arrived.`
+    },
+    {
+      q: "What is the required hair length before booking?",
+      a: "Your natural hair must be at least 4 inches long all around to book an appointment. For two Dutch braids, a minimum hair length of 6 inches is required. If your hair is shorter, please book a consultation before making an appointment."
+    },
+    {
+      q: "Is washing my hair required?",
+      a: "Yes. All clients must arrive with their hair thoroughly washed and blow-dried. Please do not arrive with damp or wet hair. Your hair must be clean and completely free of dandruff before your appointment. Service will be refused if hair is unwashed."
+    },
+    {
+      q: "How should I prepare my hair before my appointment?",
+      a: "Arrive with freshly washed, clean, completely dry, and thoroughly detangled hair, blown out straight from roots to ends. Please avoid heavy oils or butters (a light leave-in conditioner or heat protectant is fine). If you need help, we offer an in-salon detangling and blow-out service for $20."
+    },
+    {
+      q: "Do you work with all types of hair?",
+      a: "Yes, we work with different hair types and textures. If you have any concerns regarding alopecia, a bleached scalp, short hair, extra-long hair, thin hair, or thick hair, please book a consultation before making an appointment. Alternatively, you can send us a photo of your hair before booking so we can advise you appropriately."
+    },
+    {
+      q: "Do you provide braid extensions?",
+      a: "Yes. Extensions are included in the price of all standard braid services. For Remy extensions and crochet styles, please check with the salon for pricing, as these extensions are not included in the service price. You may also bring your own extensions for Remy extension and crochet services. For braid extensions, we only accept pre-stretched hair."
+    },
+    {
+      q: "Do I need to bring my own hair extensions?",
+      a: "Extensions are included for most braiding styles. If you prefer to provide your own, pre-stretched hair is strictly preferred and must be dropped off at the salon at least 24 hours before your appointment. Bringing extensions on the day of your appointment will incur a $20 preparation fee. Your hairstyle and extension colour cannot be changed on the day."
+    },
+    {
+      q: "How long will my service take?",
+      a: "Please review the selected service on our website for its estimated duration. Service times may vary and can be extended depending on the client's hair type, length, thickness, or the complexity of the chosen hairstyle."
+    },
+    {
+      q: "How do I pay the remaining balance?",
+      a: "The remaining balance for your service can be paid in cash at your appointment or through our payment gateway on our website. EFTPOS is also available (a merchant service fee may apply). Afterpay is available for eligible purchases."
+    },
+    {
+      q: "How should I come to my appointment?",
+      a: "Please arrive well-rested, well-dressed, and ready to have a great time! We encourage you to wear bright colours, bring positive vibes, and be picture-ready. You are also welcome to bring snacks or drinks if you wish, and you may bring one guest along."
+    },
+    {
+      q: "Can I bring my children or other guests to my appointment?",
+      a: "Yes, you may bring your children or other guests. However, if you are bringing children, please bring something to keep them occupied — such as an iPad, tablet, or games — as appointments can take several hours and children may get bored while waiting."
     },
     {
       q: "Can I choose a different hairstyle after booking?",
-      a: "Please contact Afriglow as soon as possible before your appointment date. Changing your hairstyle choice can affect the required appointment duration and total pricing, and is subject to schedule availability."
+      a: "Please contact Afrihub as soon as possible before your appointment date. Changing your hairstyle choice can affect the required appointment duration and total pricing, and is subject to schedule availability. Please note that style and extension colour cannot be changed on the day of your appointment."
     },
     {
       q: "Do you accept walk-ins?",
       a: "Appointments are strongly recommended due to the detailed nature and duration of braiding services. Walk-in availability is strictly subject to the daily stylist schedule. We advise checking our live online calendar before visiting."
     },
     {
-      q: "How can I contact Afriglow?",
-      a: `You can reach Rose at Afriglow by phone/SMS at ${SALON_INFO.phone}, or by email at ${SALON_INFO.email}. We are always happy to answer any questions about hair preparation, custom styles, or scheduling.`
+      q: "How can I contact Afrihub?",
+      a: `You can reach Rose at Afrihub by phone/SMS at ${SALON_INFO.phone}, or by email at ${SALON_INFO.email}. For urgent matters, please call rather than messaging. We are always happy to answer any questions about hair preparation, custom styles, or scheduling.`
     }
   ];
+
 
   return (
     <div className="py-12 md:py-20 space-y-16">

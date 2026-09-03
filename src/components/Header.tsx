@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, Calendar, MapPin, Phone, Sparkles } from "lucide-react";
+import { Menu, X, Calendar } from "lucide-react";
 import { SALON_INFO } from "@/lib/hairstyles-data";
 
 export default function Header() {
@@ -25,7 +25,7 @@ export default function Header() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/hairstyles", label: "Hairstyles" },
-    { href: "/services", label: "Services" },
+
     { href: "/about", label: "About Us" },
     { href: "/how-it-works", label: "How It Works" },
     { href: "/faqs", label: "FAQs" },
@@ -41,48 +41,25 @@ export default function Header() {
             : "bg-[#14100D] border-b border-[#D4AF37]/15"
         }`}
       >
-        {/* Top bar with location & phone */}
-        <div className="bg-gradient-to-r from-[#1C1714] via-[#2A221C] to-[#1C1714] text-[#FAF7F2] text-xs py-2 px-4 border-b border-[#D4AF37]/10 hidden sm:block">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1.5 text-neutral-300">
-                <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
-                {SALON_INFO.address}
-              </span>
-              <span className="text-neutral-500">•</span>
-              <span className="text-[#D4AF37] font-medium flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Wollongong Hair Braiding & Protective Styling
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <a
-                href={`tel:${SALON_INFO.phoneClean}`}
-                className="flex items-center gap-1.5 text-neutral-300 hover:text-[#D4AF37] transition-colors"
-              >
-                <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
-                {SALON_INFO.phone}
-              </a>
-            </div>
-          </div>
-        </div>
-
         {/* Main Nav */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group py-1">
-              <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.3)] group-hover:scale-105 transition-transform duration-300">
+              <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.3)] bg-[#14100D] group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
                 <Image
                   src="/images/logo.png"
-                  alt="Afriglow Logo"
+                  alt="Afrihub Logo"
                   fill
+                  sizes="64px"
                   className="object-cover"
                   priority
+                  unoptimized
                 />
               </div>
               <div className="flex flex-col">
                 <span className="font-serif text-2xl font-bold tracking-wider text-white group-hover:text-[#D4AF37] transition-colors">
-                  Afriglow
+                  Afrihub
                 </span>
                 <span className="text-[10px] tracking-[0.25em] uppercase text-[#D4AF37] font-semibold -mt-1">
                   Hair Styling
@@ -155,16 +132,18 @@ export default function Header() {
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-[#D4AF37]/20">
                 <div className="flex items-center gap-2.5">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D4AF37]">
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D4AF37] bg-[#14100D] flex items-center justify-center">
                     <Image
                       src="/images/logo.png"
-                      alt="Afriglow Logo"
+                      alt="Afrihub Logo"
                       fill
+                      sizes="40px"
                       className="object-cover"
+                      unoptimized
                     />
                   </div>
                   <div>
-                    <span className="font-serif text-lg font-bold text-white block">Afriglow</span>
+                    <span className="font-serif text-lg font-bold text-white block">Afrihub</span>
                     <span className="text-[9px] tracking-widest uppercase text-[#D4AF37] block -mt-1">
                       Wollongong NSW
                     </span>

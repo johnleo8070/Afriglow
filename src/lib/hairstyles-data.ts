@@ -1,4 +1,5 @@
 export type HairstyleCategory =
+  | 'Men Hair styles'
   | 'Knotless Braids'
   | 'Box Braids'
   | 'Cornrows & Feed-In Styles'
@@ -316,7 +317,7 @@ export const HAIRSTYLES_DATA: Hairstyle[] = [
 ];
 
 export const SALON_INFO = {
-  name: 'Afriglow',
+  name: 'Afrihub',
   tagline: 'Expert hair braiding with care, creativity and style.',
   address: '7–9 Corrimal Street, Wollongong NSW 2500',
   shortAddress: 'Wollongong NSW 2500',
@@ -342,6 +343,7 @@ export const TIME_SLOTS = [
 ];
 
 export const HAIRSTYLE_CATEGORIES = [
+  'Men Hair styles',
   'Knotless Braids',
   'Box Braids',
   'Cornrows & Feed-In Styles',
@@ -356,6 +358,7 @@ export const HAIRSTYLE_CATEGORIES = [
 
 export const CATEGORIES_LIST = [
   'All Styles',
+  'Men Hair styles',
   'Knotless Braids',
   'Box Braids',
   'Cornrows & Feed-In Styles',
