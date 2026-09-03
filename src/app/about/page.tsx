@@ -118,14 +118,14 @@ export default function AboutPage() {
                   className="btn-gold w-full sm:w-auto font-bold tracking-wider uppercase text-xs sm:text-sm py-4 px-10 rounded-full inline-flex items-center justify-center gap-2.5 shadow-[0_6px_30px_rgba(212,175,55,0.45)] hover:shadow-[0_8px_35px_rgba(212,175,55,0.6)]"
                 >
                   <Scissors className="w-4 h-4 text-neutral-900" />
-                  Explore Our Styles
+                  Choose your hairstyle
                 </Link>
                 <Link
-                  href="/contact"
+                  href="/terms"
                   className="w-full sm:w-auto glass-card-light text-neutral-200 hover:text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center gap-2 px-8 py-4 rounded-full hover:border-[#D4AF37]/60 transition-all duration-300"
                 >
                   <MapPin className="w-4 h-4 text-[#D4AF37]" />
-                  Visit Studio
+                  Read Terms & Conditions
                 </Link>
               </div>
             </div>
