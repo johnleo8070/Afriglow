@@ -163,7 +163,7 @@ END:VCALENDAR`;
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                Review our <Link href="/cancellation-policy" className="text-[#8C6B16] font-semibold underline">Cancellation Policy</Link> (at least 24/48h notice for rescheduling).
+                Review our <Link href="/cancellation-policy" className="text-[#8C6B16] font-semibold underline">Cancellation Policy</Link> (at least 48h notice for rescheduling).
               </li>
             </ul>
           </div>

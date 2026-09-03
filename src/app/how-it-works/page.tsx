@@ -17,7 +17,7 @@ export default function HowItWorksPage() {
     {
       num: "01",
       title: "Discover & Choose Your Style",
-      desc: "Explore our hairstyle catalogue featuring Knotless Braids, Box Braids, Cornrows, Locs, and Twists. Check length options, estimated duration, and starting prices in Australian Dollars.",
+      desc: "Explore our hairstyle catalogue featuring Knotless Braids, Box Braids, Cornrows, Locs, and Twists. Check length options, estimated duration, and starting prices. Note: Pricing and times are for labour and basic natural hair styling. You will generally need to provide your own extensions or purchase them separately.",
       tip: "Need inspiration? You can also contact Rose with reference pictures for custom styling."
     },
     {
@@ -29,13 +29,13 @@ export default function HowItWorksPage() {
     {
       num: "03",
       title: "Secure Your Booking Online",
-      desc: "Enter your contact details and pay the $50 non-refundable booking deposit. Your deposit is credited towards your total balance on appointment day, with in-salon payment options including Cash, EFTPOS, and Afterpay.",
+      desc: "Enter your contact details and pay the non-refundable booking deposit. Your deposit is credited towards your total balance on appointment day, with in-salon payment options including Cash, EFTPOS, and Afterpay.",
       tip: "You will receive an instant email confirmation with your booking reference, address, and styling details."
     },
     {
       num: "04",
       title: "Prepare Your Natural Hair",
-      desc: "Natural hair must be at least 3 inches long, freshly washed, completely detangled, and blown out straight from roots to ends without heavy grease. Extensions are included for most styles (or bring your pre-stretched hair 24h prior).",
+      desc: "Natural hair must be at least 4 inches long, freshly washed, completely detangled, and blown out straight from roots to ends without heavy grease. Please note that pricing and times are for labour and basic natural hair styling — you will generally need to provide your own extensions or purchase them separately (pre-stretched hair dropped off 24h prior).",
       tip: "Need a detangle and blow-out? We offer in-salon prep for $20. (Service refused if hair is unwashed)."
     },
     {
@@ -47,7 +47,7 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="py-12 md:py-20 space-y-20">
+    <div className="py-12 md:py-20 space-y-16">
       {/* Hero */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
         <span className="badge-gold">Simple & Transparent</span>
@@ -57,6 +57,19 @@ export default function HowItWorksPage() {
         <p className="text-neutral-600 text-base sm:text-lg leading-relaxed">
           From finding your dream hairstyle to walking out of our Wollongong salon glowing with confidence — here is how your journey works from start to finish.
         </p>
+      </section>
+
+      {/* Important Extension & Labour Notice */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div className="p-5 sm:p-6 rounded-2xl bg-[#FFFDF9] border-2 border-[#D4AF37]/40 shadow-sm flex items-start gap-3.5">
+          <Info className="w-5 h-5 text-[#8C6B16] flex-shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs sm:text-sm text-neutral-700 leading-relaxed">
+            <span className="font-bold uppercase tracking-wider text-[#8C6B16] block">Important Pricing & Extensions Notice:</span>
+            <p>
+              <strong>Note:</strong> Pricing and times are for labour and basic natural hair styling. You will generally need to provide your own extensions or purchase them separately.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Steps Timeline */}

@@ -166,8 +166,8 @@ export default function Footer() {
         <div className="pt-8 flex flex-col items-center justify-center gap-2 text-xs text-neutral-400 text-center">
           <p>
             © {new Date().getFullYear()} Afrihub. All rights reserved. developed by{" "}
-            <a href="https://www.gstatmobile.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37] transition-colors underline underline-offset-2">
-              gstat mobile solutions
+            <a href="https://www.gstatmobile.com" target="_blank" rel="noopener noreferrer" className="text-[#D4AF37] hover:text-[#D4AF37] transition-colors underline underline-offset-2">
+              GSTAT MOBILE SOLUTIONS
             </a>
           </p>
         </div>

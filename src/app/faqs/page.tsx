@@ -27,7 +27,7 @@ export default function FAQPage() {
     },
     {
       q: "Where are you located?",
-      a: `Afrihub is located in Wollongong, NSW 2500, Australia. The exact address is included in your booking confirmation email. We are situated in a convenient central location with easy nearby parking and transit connections.`
+      a: `Afrihub is located in 7–9 Corrimal Street, Wollongong NSW 2500, Australia. The exact address is included in your booking confirmation email. We are situated in a convenient central location with easy nearby parking and transit connections.`
     },
     {
       q: "What if I need to reschedule?",
@@ -71,11 +71,11 @@ export default function FAQPage() {
     },
     {
       q: "Do you provide braid extensions?",
-      a: "Yes. Extensions are included in the price of all standard braid services. For Remy extensions and crochet styles, please check with the salon for pricing, as these extensions are not included in the service price. You may also bring your own extensions for Remy extension and crochet services. For braid extensions, we only accept pre-stretched hair."
+      a: "Note: Pricing and times are for labour and basic natural hair styling. You will generally need to provide your own extensions or purchase them separately. You can bring your own pre-stretched braid extensions (dropped off 24 hours before your appointment) or purchase packs available directly in-salon. For Remy extensions and crochet styles, extensions are also purchased separately."
     },
     {
       q: "Do I need to bring my own hair extensions?",
-      a: "Extensions are included for most braiding styles. If you prefer to provide your own, pre-stretched hair is strictly preferred and must be dropped off at the salon at least 24 hours before your appointment. Bringing extensions on the day of your appointment will incur a $20 preparation fee. Your hairstyle and extension colour cannot be changed on the day."
+      a: "Yes. Pricing and times are for labour and basic natural hair styling. You will generally need to provide your own extensions or purchase them separately. If providing your own hair, pre-stretched extensions are strictly preferred and must be dropped off at the salon at least 24 hours prior to your appointment (bringing extensions on the day incurs a $20 prep fee). Pre-stretched packs are also available for purchase in-store."
     },
     {
       q: "How long will my service take?",

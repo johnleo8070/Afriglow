@@ -63,11 +63,15 @@ export default function TermsPage() {
             <h2 className="font-serif text-xl font-bold text-[#14100D]">4. Pricing, Payments & Extra Charges</h2>
             <p>Prices displayed on the website are in Australian dollars (AUD). To secure an appointment, a <strong>non-refundable deposit of 25% of the chosen hairstyle price</strong> is required. The remaining balance can be paid in-salon or through our payment gateway on our website.</p>
             
+            <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#D4AF37]/40 text-xs sm:text-sm text-neutral-800">
+              <strong>Note:</strong> Pricing and times are for labour and basic natural hair styling. You will generally need to provide your own extensions or purchase them separately.
+            </div>
+
             <div className="p-4 rounded-xl bg-[#FAF7F2] border border-[#EAE2D5] space-y-2 text-xs sm:text-sm">
               <span className="font-bold text-[#8C6B16] uppercase tracking-wider block">Schedule of Additional Surcharges:</span>
               <ul className="list-disc pl-5 space-y-1 text-neutral-700">
                 <li><strong>$20:</strong> In-salon detangling and blow-out service (if hair is not pre-detangled and blown out).</li>
-                <li><strong>$30:</strong> Hair shorter than 3 inches (requires extra precision and grip technique).</li>
+                <li><strong>$30:</strong> Hair shorter than 4 inches (requires extra precision and grip technique).</li>
                 <li><strong>$50:</strong> Extra thick, fine, or hair longer than shoulder length.</li>
                 <li><strong>$20:</strong> Hair extensions brought in on the day of appointment instead of 24 hours prior.</li>
                 <li><strong>$20:</strong> Late arrival fee (applied after the 15-minute grace period).</li>
@@ -80,14 +84,14 @@ export default function TermsPage() {
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">5. Appointments & Minimum Hair Length</h2>
             <p>Appointments are subject to availability. To book, select your desired hairstyle and pick a suitable available date from the calendar. If you are unsure of your choice, you are welcome to send a reference photo prior to booking for clarification.</p>
-            <p><strong>Minimum Hair Length:</strong> Your natural hair must be at least <strong>3 inches long</strong> all around for braiding. Hair shorter than 3 inches requires specialized grip and will attract an additional $30 surcharge.</p>
+            <p><strong>Minimum Hair Length:</strong> Your natural hair must be at least <strong>4 inches long</strong> all around to book an appointment (a minimum of 6 inches is required for two Dutch braids). Hair shorter than 4 inches requires specialized grip and will attract an additional $30 surcharge.</p>
             <p><strong>Confirmation:</strong> Select your preferred braid colour on the confirmation page. Once completed, an automated confirmation email containing your appointment details and salon address will be sent to your email.</p>
           </div>
 
           {/* Section 6 */}
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-[#14100D]">6. Providing Hair Extensions</h2>
-            <p>Extensions are included for most braiding styles. However, if you prefer to supply your own hair:</p>
+            <p><strong>Note:</strong> Pricing and times are for labour and basic natural hair styling. You will generally need to provide your own extensions or purchase them separately. When supplying your own hair:</p>
             <ul className="list-disc pl-6 space-y-1 text-sm text-neutral-700">
               <li><strong>Pre-stretched extensions</strong> are strictly preferred.</li>
               <li>Your extensions must be dropped off at the salon at least <strong>24 hours prior</strong> to your appointment for pre-feathering and preparation. Bringing extensions on the appointment day will incur a $20 prep fee.</li>
