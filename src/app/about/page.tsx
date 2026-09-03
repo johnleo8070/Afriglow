@@ -136,7 +136,7 @@ export default function AboutPage() {
                 {/* Arched Architectural Photo Frame */}
                 <div className="relative w-full aspect-[4/5] rounded-t-[160px] rounded-b-[40px] overflow-hidden border-2 border-[#D4AF37]/45 shadow-[0_0_90px_rgba(212,175,55,0.25),0_30px_70px_rgba(0,0,0,0.8)] bg-[#1A1410] group">
                   <Image
-                    src="/images/about_hero.webp"
+                    src="/images/about_hero.png"
                     alt="Afrihub Hair Salon Styling & Craftsmanship"
                     fill
                     sizes="(max-width: 768px) 100vw, 470px"
