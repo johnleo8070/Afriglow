@@ -261,14 +261,14 @@ export default function HomePage() {
                   className="btn-gold w-full sm:w-auto font-bold tracking-wider uppercase text-xs sm:text-sm py-4 px-10 rounded-full inline-flex items-center justify-center gap-2.5 shadow-[0_6px_30px_rgba(212,175,55,0.45)] hover:shadow-[0_8px_35px_rgba(212,175,55,0.6)]"
                 >
                   <Sparkles className="w-4 h-4 text-neutral-900" />
-                  Choose your hairstyles
+                  Choose your hairstyle
                 </Link>
                 <Link
                   href="/terms"
                   className="w-full sm:w-auto glass-card-light text-neutral-200 hover:text-white text-xs sm:text-sm font-semibold tracking-wide flex items-center justify-center gap-2 px-8 py-4 rounded-full hover:border-[#D4AF37]/60 transition-all duration-300"
                 >
                   <Scissors className="w-4 h-4 text-[#D4AF37]" />
-                  Terms & condition
+                 Read Terms & condition
                 </Link>
               </div>
 
@@ -318,7 +318,7 @@ export default function HomePage() {
           <div className="w-20 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full" />
           <div className="space-y-4 text-neutral-600 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto font-normal">
             <p>
-              At Afrihub, we believe your hairstyle is more than just a look â€” it&apos;s an expression of your personality.
+              At Afrihub, we believe your hairstyle is more than just a look &mdash; it&apos;s an expression of your personality.
             </p>
             <p>
               We specialise in beautiful braided hairstyles created with attention to detail, creativity and care. Whether you&apos;re looking for a protective everyday style, a fresh new look or something special for an occasion, we&apos;ll help you find a style that suits you.
