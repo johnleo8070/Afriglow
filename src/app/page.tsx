@@ -82,8 +82,14 @@ export default function HomePage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
-          setAllStyles(data.data);
-          setFeaturedStyles(data.data.slice(0, 6));
+          const sorted = [...data.data].sort((a: Hairstyle, b: Hairstyle) => {
+            const aIsMen = a.category === "Men Hair styles" ? 1 : 0;
+            const bIsMen = b.category === "Men Hair styles" ? 1 : 0;
+            if (aIsMen !== bIsMen) return aIsMen - bIsMen;
+            return (b.popular ? 1 : 0) - (a.popular ? 1 : 0);
+          });
+          setAllStyles(sorted);
+          setFeaturedStyles(sorted.slice(0, 6));
         }
       })
       .catch((err) => {
@@ -136,16 +142,16 @@ export default function HomePage() {
     });
 
     const priorityOrder = [
-      "Men Hair styles",
       "Knotless Braids",
       "Cornrows & Feed-In Styles",
       "Box Braids",
       "Fulani & Tribal Braids",
       "Twists",
       "Locs & Crochet",
+      "Boho & Hybrid Braids",
       "Micro Braids & Extended Lengths",
       "Custom & Specialty Styles",
-      "Boho & Hybrid Braids",
+      "Men Hair styles",
     ];
 
     return Object.values(categoryMap)
